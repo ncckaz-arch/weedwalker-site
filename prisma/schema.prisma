@@ -1,0 +1,186 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UploadKind {
+  ID_CARD
+  SELFIE
+  MEDICAL_DOCUMENT
+  GENERATED_PDF
+}
+
+enum IntakeStatus {
+  SUBMITTED
+  UNDER_REVIEW
+  COMPLETED
+  CANCELLED
+}
+
+enum TelemedStatus {
+  REQUESTED
+  REVIEWING
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+}
+
+enum ConsentType {
+  PDPA
+  MEDICAL_INTAKE
+  TELEMED_REQUEST
+  DOCUMENT_STORAGE
+}
+
+enum PdfStatus {
+  AVAILABLE
+  REVOKED
+}
+
+enum EntertainmentActivityType {
+  STRAIN_RANDOMIZER
+  LINE_GROUP_ENTRY
+  CONTENT_INTERACTION
+}
+
+model User {
+  id                    String                     @id @default(cuid())
+  email                 String                     @unique
+  googleSub             String                     @unique
+  name                  String?
+  image                 String?
+  emailVerifiedAt       DateTime?
+  createdAt             DateTime                   @default(now())
+  updatedAt             DateTime                   @updatedAt
+  memberProfile         MemberProfile?
+  intakeSubmissions     IntakeSubmission[]
+  uploadedDocuments     UploadedDocument[]
+  consentRecords        ConsentRecord[]
+  telemedRequests       TelemedRequest[]
+  pdfDocuments          PdfDocument[]
+  entertainmentActivity EntertainmentActivityLog[]
+}
+
+model MemberProfile {
+  id                String    @id @default(cuid())
+  userId            String    @unique
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  displayName       String?
+  phone             String?
+  lineUserId        String?
+  dateOfBirth       DateTime?
+  preferredLanguage String    @default("th")
+  profileStatus     String    @default("draft")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+model IntakeSubmission {
+  id                       String             @id @default(cuid())
+  userId                   String?
+  user                     User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
+  fullName                 String
+  email                    String
+  phone                    String
+  lineId                   String?
+  dateOfBirth              DateTime?
+  nationalIdLast4          String?
+  currentSymptoms          String?
+  intendedUse              String?
+  allergies                String?
+  medications              String?
+  priorCannabisExperience  String?
+  requestTelemed           Boolean            @default(false)
+  status                   IntakeStatus       @default(SUBMITTED)
+  submittedAt              DateTime           @default(now())
+  updatedAt                DateTime           @updatedAt
+  uploadedDocuments        UploadedDocument[]
+  consentRecords           ConsentRecord[]
+  telemedRequest           TelemedRequest?
+
+  @@index([userId, submittedAt])
+  @@index([email, submittedAt])
+}
+
+model UploadedDocument {
+  id            String            @id @default(cuid())
+  userId        String?
+  user          User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+  intakeId      String?
+  intake        IntakeSubmission? @relation(fields: [intakeId], references: [id], onDelete: SetNull)
+  pdfDocumentId String?
+  pdfDocument   PdfDocument?      @relation(fields: [pdfDocumentId], references: [id], onDelete: SetNull)
+  kind          UploadKind
+  originalName  String
+  mimeType      String
+  sizeBytes     Int
+  storageKey    String
+  checksumSha256 String?
+  createdAt     DateTime         @default(now())
+
+  @@index([userId, kind])
+  @@index([intakeId])
+}
+
+model ConsentRecord {
+  id             String            @id @default(cuid())
+  userId         String?
+  user           User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+  intakeId       String?
+  intake         IntakeSubmission? @relation(fields: [intakeId], references: [id], onDelete: SetNull)
+  consentType    ConsentType
+  consentVersion String
+  accepted       Boolean
+  ipAddress      String?
+  userAgent      String?
+  createdAt      DateTime          @default(now())
+
+  @@index([userId, consentType])
+}
+
+model TelemedRequest {
+  id            String            @id @default(cuid())
+  userId        String?
+  user          User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+  intakeId      String?           @unique
+  intake        IntakeSubmission? @relation(fields: [intakeId], references: [id], onDelete: SetNull)
+  status        TelemedStatus     @default(REQUESTED)
+  preferredDate DateTime?
+  note          String?
+  requestedAt   DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  pdfDocuments  PdfDocument[]
+
+  @@index([userId, requestedAt])
+}
+
+model PdfDocument {
+  id              String             @id @default(cuid())
+  userId          String
+  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  telemedRequestId String?
+  telemedRequest  TelemedRequest?    @relation(fields: [telemedRequestId], references: [id], onDelete: SetNull)
+  title           String
+  documentType    String
+  storageKey      String
+  status          PdfStatus          @default(AVAILABLE)
+  createdAt       DateTime           @default(now())
+  uploadedFiles   UploadedDocument[]
+
+  @@index([userId, documentType])
+}
+
+model EntertainmentActivityLog {
+  id           String                    @id @default(cuid())
+  userId       String?
+  user         User?                     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  activityType EntertainmentActivityType
+  payload      Json
+  createdAt    DateTime                  @default(now())
+
+  @@index([userId, activityType])
+}
