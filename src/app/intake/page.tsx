@@ -1,31 +1,56 @@
-import { IntakeForm } from '@/components/intake-form';
+const intakeUrl =
+  process.env.APPS_SCRIPT_INTAKE_URL ||
+  'https://script.google.com/macros/s/AKfycbxnNoOPUHL5Wtn98x4N2baPjVCQznJ7ioYtZNtoksiU7MHVv-VKgc0U4y69Jdvh1cuK/exec';
+
+export const metadata = {
+  title: 'Intake Portal | WEED WALKER',
+  description: 'WEED WALKER Intake Portal for member access, consent, identity verification, and Telemed request.',
+};
 
 export default function IntakePage() {
   return (
-    <main className="walker-shell pb-16 pt-8">
-      <section className="mb-8 grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
-        <div>
-          <p className="mb-4 inline-flex rounded-full border border-walkerYellow/30 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-walkerYellow">
-            Access Within
-          </p>
-          <h1 className="max-w-4xl text-5xl font-black uppercase leading-[0.9] tracking-[-0.06em] md:text-7xl">
-            Enter the Light Force.
-          </h1>
-          <p className="mt-5 max-w-2xl text-lg leading-8 text-[#d9d3bd]">
-            WEED WALKER member intake for a conscious cannabis and terpene-led experience.
-            Submit your member profile, consent, identity details, and Telemed intention so the team can prepare your curated journey.
-          </p>
-        </div>
+    <main className="min-h-screen bg-[#050505] text-white">
+      <section className="border-b border-walkerYellow/20 bg-[radial-gradient(circle_at_top_left,rgba(245,197,24,0.18),transparent_34%),linear-gradient(135deg,#050505,#10100b_55%,#050505)] px-4 py-5">
+        <div className="mx-auto flex max-w-7xl flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.26em] text-walkerYellow">
+              WEED WALKER · Intake Portal
+            </p>
+            <h1 className="mt-2 text-3xl font-black uppercase tracking-[-0.05em] md:text-5xl">
+              Access Within
+            </h1>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-[#d9d3bd] md:text-base">
+              ใช้ฟอร์ม Intake เดิมของ WEED WALKER สำหรับข้อมูลสมาชิก ความยินยอม เอกสารยืนยันตัวตน และคำขอ Telemed
+            </p>
+          </div>
 
-        <div className="walker-card p-5">
-          <p className="text-xs font-black uppercase tracking-[0.22em] text-walkerYellow">Science to Soul</p>
-          <p className="mt-3 text-sm leading-6 text-walkerMuted">
-            This is the weedwalker.net frontend. Apps Script can stay behind the scenes as a temporary workflow backend.
-          </p>
+          <a
+            href={intakeUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center justify-center rounded-full border border-walkerYellow/40 px-5 py-3 text-sm font-black uppercase tracking-[0.16em] text-walkerYellow transition hover:border-walkerYellow hover:bg-walkerYellow hover:text-black"
+          >
+            Open Intake Directly
+          </a>
         </div>
       </section>
 
-      <IntakeForm />
+      <section className="mx-auto max-w-7xl px-4 py-4">
+        <div className="overflow-hidden rounded-[28px] border border-walkerYellow/20 bg-black shadow-[0_0_60px_rgba(245,197,24,0.12)]">
+          <iframe
+            title="WEED WALKER Intake"
+            src={intakeUrl}
+            className="h-[calc(100vh-190px)] min-h-[720px] w-full bg-white"
+            loading="eager"
+            referrerPolicy="origin"
+            allow="camera; clipboard-read; clipboard-write; fullscreen"
+          />
+        </div>
+
+        <p className="mt-4 text-center text-xs leading-5 text-walkerMuted">
+          ถ้าฟอร์มไม่แสดง ให้กดปุ่ม Open Intake Directly ด้านบนก่อนชั่วคราว แล้วค่อยตั้งค่า Apps Script ให้ยอมฝังบน weedwalker.net แบบถาวร
+        </p>
+      </section>
     </main>
   );
 }

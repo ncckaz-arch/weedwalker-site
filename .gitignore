@@ -26,5 +26,6 @@ Thumbs.db
 
 # local uploads / generated data
 data/
+.tmp-secrets/
 
 .vercel
