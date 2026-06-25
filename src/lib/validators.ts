@@ -22,6 +22,11 @@ export const intakeSchema = z.object({
   requestTelemed: z.enum(['on', 'true']).optional(),
   telemedNote: z.string().max(1500).optional().or(z.literal('')),
   preferredTelemedDate: z.string().optional().or(z.literal('')),
+  conditionIntention: z.string().min(2).max(2000).optional().or(z.literal('')),
+  telemedConsent: z.enum(['on', 'true']).optional(),
+  termsConsent: z.enum(['on', 'true']).optional(),
+  signatureDataUrl: z.string().max(120000).optional().or(z.literal('')),
+  website: z.string().max(200).optional().or(z.literal('')),
   pdpaConsent: z.enum(['on', 'true']),
   medicalIntakeConsent: z.enum(['on', 'true']),
   documentStorageConsent: z.enum(['on', 'true'])

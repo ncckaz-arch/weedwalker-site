@@ -35,6 +35,10 @@ ENABLE_GOOGLE_LOGIN="false"
 NEXT_PUBLIC_ENABLE_GOOGLE_LOGIN="false"
 ENABLE_RANDOM_PROMO="false"
 NEXT_PUBLIC_ENABLE_RANDOM_PROMO="false"
+APPS_SCRIPT_INTAKE_URL="https://script.google.com/macros/s/AKfycbxnNoOPUHL5Wtn98x4N2baPjVCQznJ7ioYtZNtoksiU7MHVv-VKgc0U4y69Jdvh1cuK/exec"
+APPS_SCRIPT_FORWARD_REQUIRED="false"
+APPS_SCRIPT_FORWARD_FILES="false"
+NEXT_PUBLIC_APPS_SCRIPT_FORWARD_FILES="false"
 ```
 
 ผลลัพธ์:
@@ -43,6 +47,7 @@ NEXT_PUBLIC_ENABLE_RANDOM_PROMO="false"
 - Upload เอกสารจะถูกปิดไว้พร้อมข้อความอธิบายชัดเจน
 - Google Login และหน้า Member ที่ต้อง login จะถูก bypass อย่างปลอดภัย
 - Random/Lucky Draw ไม่ถูกนับเป็น core website
+- `/intake` เป็นหน้า WEED WALKER จริงบน `weedwalker.net` และสามารถ forward payload ไป Apps Script หลังบ้านได้เมื่อ Apps Script รองรับ `doPost`
 
 ### Optional for later
 
@@ -56,6 +61,47 @@ GOOGLE_APPLICATION_CREDENTIALS=""
 LINE_GROUP_URL="https://lin.ee/yNXeTBs"
 NEXT_PUBLIC_LINE_GROUP_URL="https://lin.ee/yNXeTBs"
 ```
+
+### Apps Script backend adapter
+
+Level 4 setup:
+
+- ลูกค้าเห็นและใช้งาน `/intake` บน `weedwalker.net`
+- Next.js API รับข้อมูลที่ `/api/intake`
+- ระบบบันทึกลง Neon ก่อน
+- ถ้าใส่ `APPS_SCRIPT_INTAKE_URL` ระบบจะ forward JSON payload ไป Apps Script หลังบ้าน
+
+ถ้าต้องการให้ Apps Script เป็น workflow backend จริง ต้องเพิ่ม/ยืนยัน `doPost(e)` ใน Apps Script ให้รับ JSON รูปแบบนี้:
+
+```json
+{
+  "source": "weedwalker.net",
+  "version": "intake-v1",
+  "profile": {
+    "fullName": "...",
+    "phone": "...",
+    "email": "..."
+  },
+  "telemed": {
+    "conditionIntention": "..."
+  },
+  "consents": {
+    "telemedConsent": true,
+    "pdpaConsent": true
+  },
+  "signatureDataUrl": "data:image/png;base64,...",
+  "files": []
+}
+```
+
+ถ้าจะส่งรูป ID/Selfie ไป Apps Script ให้ตั้ง:
+
+```env
+APPS_SCRIPT_FORWARD_FILES="true"
+NEXT_PUBLIC_APPS_SCRIPT_FORWARD_FILES="true"
+```
+
+และฝั่ง Apps Script ต้องรองรับ `files[].base64`
 
 ---
 
