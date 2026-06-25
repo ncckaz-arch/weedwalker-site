@@ -51,7 +51,9 @@ export async function GET() {
     );
   }
 
-  const html = await upstreamResponse.text();
+  const html = (await upstreamResponse.text())
+    .replaceAll('href="/static/macros/', 'href="https://script.google.com/static/macros/')
+    .replaceAll('src="/static/macros/', 'src="https://script.google.com/static/macros/');
 
   return new Response(html, {
     headers: {
