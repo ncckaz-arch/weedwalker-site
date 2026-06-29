@@ -17,7 +17,9 @@ const allowedMimeTypes = new Set([
 ]);
 
 export function fileUploadsEnabled() {
-  return process.env.ENABLE_FILE_UPLOADS === 'true';
+  if (process.env.ENABLE_FILE_UPLOADS !== 'true') return false;
+  if (process.env.NODE_ENV === 'production' && !process.env.GCS_BUCKET_NAME) return false;
+  return true;
 }
 
 export function publicFileUploadsEnabled() {

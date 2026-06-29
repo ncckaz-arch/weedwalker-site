@@ -9,7 +9,7 @@ export const memberProfileSchema = z.object({
 
 export const intakeSchema = z.object({
   fullName: z.string().min(2).max(160),
-  email: z.string().email().max(180),
+  email: z.string().email().max(180).optional().or(z.literal('')),
   phone: z.string().min(6).max(40),
   lineId: z.string().max(80).optional().or(z.literal('')),
   dateOfBirth: z.string().optional().or(z.literal('')),
@@ -22,7 +22,7 @@ export const intakeSchema = z.object({
   requestTelemed: z.enum(['on', 'true']).optional(),
   telemedNote: z.string().max(1500).optional().or(z.literal('')),
   preferredTelemedDate: z.string().optional().or(z.literal('')),
-  conditionIntention: z.string().min(2).max(2000).optional().or(z.literal('')),
+  conditionIntention: z.string().min(2).max(2000),
   telemedConsent: z.enum(['on', 'true']).optional(),
   termsConsent: z.enum(['on', 'true']).optional(),
   signatureDataUrl: z.string().max(120000).optional().or(z.literal('')),

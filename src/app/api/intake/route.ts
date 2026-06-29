@@ -35,23 +35,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'ID card image is required.' }, { status: 400 });
     }
 
-    if (uploadsEnabled && (!(selfie instanceof File) || selfie.size === 0)) {
-      return NextResponse.json({ error: 'Selfie image is required.' }, { status: 400 });
-    }
-
     const requestHeaders = headers();
     const ipAddress = requestHeaders.get('x-forwarded-for')?.split(',')[0]?.trim() || null;
     const userAgent = requestHeaders.get('user-agent') || null;
 
     const uploadedFiles = uploadsEnabled
       ? [
-          { kind: UploadKind.ID_CARD, file: idCard as File },
-          { kind: UploadKind.SELFIE, file: selfie as File },
+          ...(idCard instanceof File && idCard.size > 0 ? [{ kind: UploadKind.ID_CARD, file: idCard }] : []),
+          ...(selfie instanceof File && selfie.size > 0 ? [{ kind: UploadKind.SELFIE, file: selfie }] : []),
           ...medicalDocs.map((file) => ({ kind: UploadKind.MEDICAL_DOCUMENT, file }))
         ]
       : [];
     const ownerKey = user?.id || `guest-${Date.now()}-${randomUUID()}`;
     const conditionIntention = emptyToNull(parsed.conditionIntention) || emptyToNull(parsed.currentSymptoms);
+    const intakeEmail = emptyToNull(parsed.email) || `guest-${randomUUID()}@intake.weedwalker.local`;
 
     const savedFiles = await Promise.all(
       uploadedFiles.map(async (upload) => ({
@@ -69,7 +66,7 @@ export async function POST(request: Request) {
         data: {
           userId: user?.id || null,
           fullName: parsed.fullName,
-          email: parsed.email,
+          email: intakeEmail,
           phone: parsed.phone,
           lineId: emptyToNull(parsed.lineId),
           dateOfBirth: optionalDate(parsed.dateOfBirth),
@@ -169,7 +166,7 @@ export async function POST(request: Request) {
           profile: {
             fullName: parsed.fullName,
             phone: parsed.phone,
-            email: parsed.email,
+            email: emptyToNull(parsed.email) || '',
             lineId: emptyToNull(parsed.lineId)
           },
           telemed: {

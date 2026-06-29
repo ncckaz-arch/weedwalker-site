@@ -28,16 +28,21 @@ export default function IntakePage() {
             </a>
 
             <div>
-              <p className="mb-6 inline-flex rounded-full border border-walkerYellow/35 bg-walkerYellow/10 px-4 py-2 text-xs font-black uppercase tracking-[0.24em] text-walkerYellow">
-                Member Registration
+              <p className="mb-5 inline-flex items-center gap-3 text-sm font-black uppercase tracking-[0.28em] text-walkerYellow">
+                <span className="h-px w-10 bg-walkerYellow/70" />
+                Access Within
+                <span className="h-px w-10 bg-walkerYellow/70" />
               </p>
-              <h1 className="max-w-xl text-5xl font-black leading-[0.92] tracking-[-0.07em] text-[#f8f3dc] md:text-7xl">
-                สมาชิกของคุณ
-                <span className="block text-walkerYellow">ทุกอย่างในที่เดียว</span>
+              <h1 className="max-w-2xl text-5xl font-black uppercase leading-[0.88] tracking-[-0.08em] text-[#f8f3dc] md:text-7xl">
+                Enter The
+                <span className="block text-walkerYellow">Light Force</span>
               </h1>
+              <p className="mt-5 text-sm font-black uppercase tracking-[0.32em] text-walkerYellow md:text-base">
+                Conscious Cannabis · Terpene-Led · Curated For You
+              </p>
               <p className="mt-6 max-w-xl text-base leading-8 text-[#d9d3bd] md:text-lg">
-                ลงทะเบียนสมาชิก ยืนยันตัวตน และส่งข้อมูลเพื่อประสานงานกับคลินิกพาร์ทเนอร์ของ WEED WALKER
-                พร้อมติดตามสถานะและดาวน์โหลดเอกสารของคุณได้อย่างปลอดภัย
+                แบบฟอร์มสำหรับลงทะเบียนสมาชิก ยืนยันตัวตน และส่งข้อมูลเพื่อประสานงานกับคลินิกพาร์ทเนอร์
+                โดย WEED WALKER ทำหน้าที่รับข้อมูลและส่งต่อเท่าที่จำเป็นเท่านั้น
               </p>
 
             </div>
@@ -76,54 +81,61 @@ export default function IntakePage() {
           <IntakeForm />
         </div>
 
-        <MemberServiceSidebar />
+        <IntakeInfoSidebar />
       </div>
     </main>
   );
 }
 
-function MemberServiceSidebar() {
+function IntakeInfoSidebar() {
   return (
-    <aside className="walker-card p-5 lg:sticky lg:top-24">
-      <div className="mb-4 flex items-center justify-between gap-4">
-        <h2 className="text-lg font-black uppercase tracking-[0.08em] text-walkerYellow">
-          Member Service
-        </h2>
-        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-walkerMuted">
-          Service
-        </span>
-      </div>
-
-      <div className="overflow-hidden rounded-3xl border border-walkerYellow/20 bg-black/30">
-        <a
-          href="/member"
-          className="group flex items-center gap-4 border-b border-white/10 p-4 transition hover:bg-walkerYellow/5"
-        >
-          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-walkerYellow/10 text-walkerYellow">
-            ◎
+    <aside className="grid gap-4 lg:sticky lg:top-24">
+      <section className="walker-card p-5">
+        <div className="flex gap-4">
+          <span className="grid h-14 w-14 shrink-0 place-items-center rounded-full border border-walkerYellow/35 bg-walkerYellow/10 text-2xl text-walkerYellow">
+            ♢
           </span>
-          <span className="min-w-0 flex-1">
-            <strong className="block text-sm font-black uppercase tracking-[0.08em] text-walkerYellow">
-              Application Status
-            </strong>
-            <small className="walker-muted mt-1 block text-xs leading-5">เข้าสู่ระบบด้วย Google</small>
-          </span>
-          <span className="text-2xl leading-none text-walkerYellow transition group-hover:translate-x-1">›</span>
-        </a>
+          <div>
+            <h2 className="text-lg font-black uppercase tracking-[0.08em] text-walkerYellow">
+              Your Privacy Is Our Priority
+            </h2>
+            <p className="mt-2 text-sm leading-7 text-walkerMuted">
+              ข้อมูลของคุณจะถูกใช้เพื่อการยืนยันตัวตน การจัดการสมาชิก และการประสานงานกับคลินิกพาร์ทเนอร์เท่าที่จำเป็นเท่านั้น
+            </p>
+          </div>
+        </div>
+      </section>
 
+      <section className="overflow-hidden rounded-[1.75rem] border border-walkerYellow/20 bg-black/45">
         <a
           href="/privacy-policy"
           className="group flex items-center gap-4 border-b border-white/10 p-4 transition hover:bg-walkerYellow/5"
         >
           <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-walkerYellow/10 text-walkerYellow">
-            ◇
+            ▤
           </span>
           <span className="min-w-0 flex-1">
             <strong className="block text-sm font-black uppercase tracking-[0.08em] text-walkerYellow">
-              PDPA Rights Request
+              Privacy Policy
+            </strong>
+            <small className="walker-muted mt-1 block text-xs leading-5">นโยบายความเป็นส่วนตัว</small>
+          </span>
+          <span className="text-2xl leading-none text-walkerYellow transition group-hover:translate-x-1">›</span>
+        </a>
+
+        <a
+          href="/terms-of-use"
+          className="group flex items-center gap-4 border-b border-white/10 p-4 transition hover:bg-walkerYellow/5"
+        >
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-walkerYellow/10 text-walkerYellow">
+            ⚖
+          </span>
+          <span className="min-w-0 flex-1">
+            <strong className="block text-sm font-black uppercase tracking-[0.08em] text-walkerYellow">
+              Terms & Conditions
             </strong>
             <small className="walker-muted mt-1 block text-xs leading-5">
-              ขอเข้าถึง แก้ไข ลบ หรือถอนความยินยอม
+              ข้อตกลงและเงื่อนไขการใช้งาน
             </small>
           </span>
           <span className="text-2xl leading-none text-walkerYellow transition group-hover:translate-x-1">›</span>
@@ -134,17 +146,17 @@ function MemberServiceSidebar() {
           className="group flex items-center gap-4 p-4 transition hover:bg-walkerYellow/5"
         >
           <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-walkerYellow/10 text-walkerYellow">
-            ✦
+            ?
           </span>
           <span className="min-w-0 flex-1">
             <strong className="block text-sm font-black uppercase tracking-[0.08em] text-walkerYellow">
-              Contact Support
+              Need Help?
             </strong>
-            <small className="walker-muted mt-1 block text-xs leading-5">อีเมล LINE OA และเบอร์โทรติดต่อทีม</small>
+            <small className="walker-muted mt-1 block text-xs leading-5">@weedwalker · weedwalkerkth@gmail.com</small>
           </span>
           <span className="text-2xl leading-none text-walkerYellow transition group-hover:translate-x-1">›</span>
         </a>
-      </div>
+      </section>
     </aside>
   );
 }

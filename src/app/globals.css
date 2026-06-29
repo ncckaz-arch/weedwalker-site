@@ -98,3 +98,79 @@ button {
 .walker-muted {
   color: #a4a49b;
 }
+
+.access-field {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  min-height: 58px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 16px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.025)),
+    rgba(0, 0, 0, 0.3);
+  padding: 0 16px;
+}
+
+.access-field:focus-within {
+  border-color: rgba(255, 210, 26, 0.55);
+  box-shadow: 0 0 0 3px rgba(255, 210, 26, 0.1);
+}
+
+.access-field input,
+.access-field textarea {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: #f7f3df;
+  outline: none;
+}
+
+.access-field input::placeholder,
+.access-field textarea::placeholder {
+  color: rgba(217, 211, 189, 0.62);
+}
+
+.access-field-area {
+  align-items: start;
+  min-height: 128px;
+  padding-top: 16px;
+}
+
+.access-field textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.access-icon {
+  color: rgba(247, 243, 223, 0.72);
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.access-upload {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 92px;
+  border: 1px dashed rgba(255, 255, 255, 0.22);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 100% 50%, rgba(255, 210, 26, 0.08), transparent 16rem),
+    rgba(255, 255, 255, 0.035);
+  padding: 18px;
+  cursor: pointer;
+  transition:
+    border-color 150ms ease,
+    background 150ms ease,
+    transform 150ms ease;
+}
+
+.access-upload:hover {
+  border-color: rgba(255, 210, 26, 0.55);
+  background:
+    radial-gradient(circle at 100% 50%, rgba(255, 210, 26, 0.14), transparent 16rem),
+    rgba(255, 255, 255, 0.05);
+  transform: translateY(-1px);
+}
