@@ -85,7 +85,7 @@ export async function saveUpload(params: {
   return { storageKey, checksumSha256 };
 }
 
-function googleStorageOptions(): StorageOptions {
+export function googleStorageOptions(): StorageOptions {
   const rawCredentials =
     process.env.GOOGLE_CLOUD_CREDENTIALS_JSON ||
     process.env.GCS_SERVICE_ACCOUNT_JSON ||
