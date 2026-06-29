@@ -123,14 +123,6 @@ export function IntakeForm() {
             <input className="walker-input" name="email" type="email" required placeholder="ระบุอีเมลสมาชิก" />
             <span className="walker-muted text-xs">ใช้สำหรับส่งลิงก์ Portal และติดต่อกลับเท่านั้น</span>
           </label>
-          <label className="walker-label">
-            LINE ID / LINE OA name
-            <input className="walker-input" name="lineId" placeholder="@weedwalker หรือ Line ID ของคุณ" />
-          </label>
-          <label className="walker-label">
-            วันเกิด
-            <input className="walker-input" name="dateOfBirth" type="date" />
-          </label>
         </div>
       </section>
 

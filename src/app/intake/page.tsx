@@ -10,8 +10,12 @@ export default function IntakePage() {
     <main className="walker-shell py-5 md:py-8">
       <div className="mb-5 flex items-center justify-between gap-4">
         <a href="/" className="flex items-center gap-3" aria-label="Back to WEED WALKER home">
-          <span className="grid h-12 w-12 place-items-center rounded-2xl border border-walkerYellow/30 bg-walkerYellow text-sm font-black text-walkerBlack shadow-[0_0_32px_rgba(255,210,26,0.18)]">
-            WW
+          <span className="grid h-14 w-14 place-items-center overflow-hidden rounded-2xl border border-walkerYellow/30 bg-black shadow-[0_0_32px_rgba(255,210,26,0.18)]">
+            <img
+              src="/weed-walker-logo-mark.png"
+              alt="WEED WALKER logo"
+              className="h-12 w-12 object-contain"
+            />
           </span>
           <span>
             <strong className="block text-base tracking-tight">WEED WALKER</strong>
