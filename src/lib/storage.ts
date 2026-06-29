@@ -1,7 +1,7 @@
 import { createHash, randomUUID } from 'crypto';
 import { mkdir, writeFile } from 'fs/promises';
 import path from 'path';
-import { Storage } from '@google-cloud/storage';
+import { Storage, type StorageOptions } from '@google-cloud/storage';
 import { UploadKind } from '@prisma/client';
 
 export type SavedUpload = {
@@ -60,7 +60,7 @@ export async function saveUpload(params: {
 
   const bucketName = process.env.GCS_BUCKET_NAME;
   if (bucketName) {
-    const storage = new Storage();
+    const storage = new Storage(googleStorageOptions());
     await storage.bucket(bucketName).file(storageKey).save(buffer, {
       resumable: false,
       contentType: params.file.type,
@@ -83,6 +83,36 @@ export async function saveUpload(params: {
   await mkdir(path.dirname(fullPath), { recursive: true });
   await writeFile(fullPath, buffer);
   return { storageKey, checksumSha256 };
+}
+
+function googleStorageOptions(): StorageOptions {
+  const rawCredentials =
+    process.env.GOOGLE_CLOUD_CREDENTIALS_JSON ||
+    process.env.GCS_SERVICE_ACCOUNT_JSON ||
+    process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON;
+
+  if (!rawCredentials) return {};
+
+  const json = rawCredentials.trim().startsWith('{')
+    ? rawCredentials
+    : Buffer.from(rawCredentials, 'base64').toString('utf8');
+  const credentials = JSON.parse(json) as {
+    project_id?: string;
+    client_email?: string;
+    private_key?: string;
+  };
+
+  if (!credentials.client_email || !credentials.private_key) {
+    throw new Error('Invalid Google Cloud Storage credentials JSON.');
+  }
+
+  return {
+    projectId: credentials.project_id,
+    credentials: {
+      client_email: credentials.client_email,
+      private_key: credentials.private_key
+    }
+  };
 }
 
 function safeExtension(fileName: string, mimeType: string) {

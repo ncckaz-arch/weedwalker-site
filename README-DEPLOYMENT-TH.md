@@ -57,10 +57,30 @@ NEXT_PUBLIC_APPS_SCRIPT_FORWARD_FILES="false"
 GOOGLE_CLIENT_ID=""
 NEXT_PUBLIC_GOOGLE_CLIENT_ID=""
 GCS_BUCKET_NAME=""
+GOOGLE_CLOUD_CREDENTIALS_JSON=""
 GOOGLE_APPLICATION_CREDENTIALS=""
 LINE_GROUP_URL="https://lin.ee/yNXeTBs"
 NEXT_PUBLIC_LINE_GROUP_URL="https://lin.ee/yNXeTBs"
 ```
+
+### เปิด Identity Upload / ID Card / Selfie
+
+กล่อง `Upload disabled for this deployment` จะหายไปเมื่อเปิดไฟล์ upload ใน Vercel ด้วย env ต่อไปนี้:
+
+```env
+ENABLE_FILE_UPLOADS="true"
+NEXT_PUBLIC_ENABLE_FILE_UPLOADS="true"
+GCS_BUCKET_NAME="ชื่อ bucket ใน Google Cloud Storage"
+GOOGLE_CLOUD_CREDENTIALS_JSON="service account json หรือ base64 ของ service account json"
+MAX_UPLOAD_MB="12"
+```
+
+หมายเหตุ:
+
+- Neon Postgres เก็บข้อมูลฟอร์มและ metadata ของไฟล์
+- Google Cloud Storage เก็บไฟล์จริง เช่น ID card, selfie, medical document
+- ใน Vercel ให้ใช้ `GOOGLE_CLOUD_CREDENTIALS_JSON` แทนการอัปโหลดไฟล์ credential path
+- หลังเพิ่ม/แก้ env ต้อง Redeploy ใหม่ 1 รอบ
 
 ### Apps Script backend adapter
 
