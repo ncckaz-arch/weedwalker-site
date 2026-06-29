@@ -204,24 +204,28 @@ export function IntakeForm() {
       <section className="grid gap-3 rounded-3xl border border-white/10 bg-white/[0.04] p-5">
         <p className="text-xs font-black uppercase tracking-[0.22em] text-walkerYellow">Data Covenant</p>
         <p className="text-sm leading-7 text-walkerMuted">
-          WEED WALKER ให้ความสำคัญกับความเป็นส่วนตัวของสมาชิก ข้อมูลจะถูกใช้เพื่อการบริหารสมาชิก
-          การประสานงาน Telemed และการจัดทำเอกสารที่เกี่ยวข้องเท่านั้น
+          ข้อมูลของคุณจะถูกใช้เฉพาะเพื่อการยืนยันตัวตน การจัดการสมาชิก และการประสานงานกับคลินิกพาร์ทเนอร์
+          ตามนโยบายความเป็นส่วนตัวของ WEED WALKER
         </p>
-        <label className="flex gap-3 text-sm font-bold">
-          <input name="pdpaConsent" type="checkbox" required />
-          I consent to PDPA data handling for this intake.
-        </label>
+        <input name="pdpaConsent" type="hidden" value="true" />
+        <input name="documentStorageConsent" type="hidden" value="true" />
         <label className="flex gap-3 text-sm font-bold">
           <input name="medicalIntakeConsent" type="checkbox" required />
-          I confirm the intake information is accurate.
-        </label>
-        <label className="flex gap-3 text-sm font-bold">
-          <input name="documentStorageConsent" type="checkbox" required />
-          I consent to secure storage of uploaded documents and generated PDFs.
+          ข้าพเจ้าขอยืนยันว่าข้อมูลที่ให้ไว้เป็นความจริงและถูกต้อง
         </label>
         <label className="flex gap-3 text-sm font-bold">
           <input name="termsConsent" type="checkbox" required />
-          ข้าพเจ้าได้อ่านและยอมรับข้อตกลงและเงื่อนไขการใช้งานของ WEED WALKER แล้ว
+          <span>
+            ข้าพเจ้าได้อ่านและยอมรับ{' '}
+            <a className="text-walkerYellow underline underline-offset-4" href="/privacy-policy">
+              นโยบายความเป็นส่วนตัว
+            </a>{' '}
+            และ{' '}
+            <a className="text-walkerYellow underline underline-offset-4" href="/terms-of-use">
+              ข้อตกลงการใช้งาน
+            </a>{' '}
+            ของ WEED WALKER แล้ว
+          </span>
         </label>
       </section>
 
