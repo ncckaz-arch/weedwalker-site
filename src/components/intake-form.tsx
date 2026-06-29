@@ -107,7 +107,7 @@ export function IntakeForm() {
       <input className="hidden" name="website" tabIndex={-1} autoComplete="off" />
       <input type="hidden" name="requestTelemed" value="true" />
 
-      <section className="grid gap-4">
+      <section id="member-profile" className="scroll-mt-28 grid gap-4">
         <SectionTitle number="01" title="Member Profile" />
         <div className="grid gap-4 md:grid-cols-2">
           <label className="walker-label">
