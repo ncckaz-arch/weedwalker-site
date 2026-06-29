@@ -51,7 +51,80 @@ export default function IntakePage() {
         </div>
       </section>
 
-      <IntakeForm />
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
+        <div className="min-w-0">
+          <IntakeForm />
+        </div>
+
+        <MemberServiceSidebar />
+      </div>
     </main>
+  );
+}
+
+function MemberServiceSidebar() {
+  return (
+    <aside className="walker-card p-5 lg:sticky lg:top-24">
+      <div className="mb-4 flex items-center justify-between gap-4">
+        <h2 className="text-lg font-black uppercase tracking-[0.08em] text-walkerYellow">
+          Member Service
+        </h2>
+        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-walkerMuted">
+          Service
+        </span>
+      </div>
+
+      <div className="overflow-hidden rounded-3xl border border-walkerYellow/20 bg-black/30">
+        <a
+          href="/member"
+          className="group flex items-center gap-4 border-b border-white/10 p-4 transition hover:bg-walkerYellow/5"
+        >
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-walkerYellow/10 text-walkerYellow">
+            ◎
+          </span>
+          <span className="min-w-0 flex-1">
+            <strong className="block text-sm font-black uppercase tracking-[0.08em] text-walkerYellow">
+              Application Status
+            </strong>
+            <small className="walker-muted mt-1 block text-xs leading-5">เข้าสู่ระบบด้วย Google</small>
+          </span>
+          <span className="text-2xl leading-none text-walkerYellow transition group-hover:translate-x-1">›</span>
+        </a>
+
+        <a
+          href="/privacy-policy"
+          className="group flex items-center gap-4 border-b border-white/10 p-4 transition hover:bg-walkerYellow/5"
+        >
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-walkerYellow/10 text-walkerYellow">
+            ◇
+          </span>
+          <span className="min-w-0 flex-1">
+            <strong className="block text-sm font-black uppercase tracking-[0.08em] text-walkerYellow">
+              PDPA Rights Request
+            </strong>
+            <small className="walker-muted mt-1 block text-xs leading-5">
+              ขอเข้าถึง แก้ไข ลบ หรือถอนความยินยอม
+            </small>
+          </span>
+          <span className="text-2xl leading-none text-walkerYellow transition group-hover:translate-x-1">›</span>
+        </a>
+
+        <a
+          href="https://lin.ee/yNXeTBs"
+          className="group flex items-center gap-4 p-4 transition hover:bg-walkerYellow/5"
+        >
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-walkerYellow/10 text-walkerYellow">
+            ✦
+          </span>
+          <span className="min-w-0 flex-1">
+            <strong className="block text-sm font-black uppercase tracking-[0.08em] text-walkerYellow">
+              Contact Support
+            </strong>
+            <small className="walker-muted mt-1 block text-xs leading-5">อีเมล LINE OA และเบอร์โทรติดต่อทีม</small>
+          </span>
+          <span className="text-2xl leading-none text-walkerYellow transition group-hover:translate-x-1">›</span>
+        </a>
+      </div>
+    </aside>
   );
 }
