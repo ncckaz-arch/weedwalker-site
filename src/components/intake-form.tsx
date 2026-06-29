@@ -127,28 +127,31 @@ export function IntakeForm() {
       </section>
 
       <section className="grid gap-4">
-        <SectionTitle number="02" title="Telemed Consent & Data Consent" />
+        <SectionTitle number="02" title="Partner Clinic Referral · ส่งต่อคลินิกพาร์ทเนอร์" />
         <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-5">
           <p className="text-sm leading-7 text-[#ddd5bd]">
-            ข้าพเจ้ายินยอมให้ WEED WALKER ใช้ข้อมูลที่ให้ไว้เพื่อดำเนินกระบวนการสมัครสมาชิก
-            การประเมินข้อมูล การประสานงาน Telemed การให้คำปรึกษา และการจัดทำเอกสารที่เกี่ยวข้องตามกฎหมาย
+            WEED WALKER ไม่ใช่สถานพยาบาล และไม่ได้ให้บริการวินิจฉัย รักษา สั่งจ่าย ออกเอกสารทางการแพทย์
+            หรือให้บริการ Telemedicine เอง ข้อมูลที่ท่านส่งผ่านแบบฟอร์มนี้ใช้เพื่อการประสานงานและส่งต่อให้คลินิกพาร์ทเนอร์
+            ที่ได้รับอนุญาตเป็นผู้ประเมินและให้บริการตามกฎหมายเท่านั้น
           </p>
           <label className="mt-4 flex gap-3 text-sm font-bold text-[#ddd5bd]">
             <input name="telemedConsent" type="checkbox" required />
-            ข้าพเจ้าได้อ่านและยอมรับการให้ข้อมูล การประเมิน Telemed การจัดเก็บข้อมูลสมาชิก และการดำเนินการที่เกี่ยวข้องตามนโยบายของ WEED WALKER
+            ข้าพเจ้ายินยอมให้ WEED WALKER เก็บ ใช้ และส่งต่อข้อมูลที่จำเป็นให้คลินิกพาร์ทเนอร์ที่ได้รับอนุญาต
+            เพื่อให้คลินิกเป็นผู้ติดต่อ ประเมิน และให้บริการ Telemed ตามกฎหมาย โดยข้าพเจ้ารับทราบว่า WEED WALKER
+            ไม่ใช่สถานพยาบาลและไม่ได้ให้บริการทางการแพทย์เอง
           </label>
         </div>
 
         <label className="walker-label">
-          Condition / Intention สำหรับ Telemed *
+          ข้อมูลสำหรับส่งต่อคลินิกพาร์ทเนอร์ *
           <textarea
             className="walker-input min-h-36"
             name="conditionIntention"
             required
-            placeholder="ระบุอาการ โรค หรือเหตุผลที่ต้องการใช้กัญชา เช่น นอนไม่หลับ ปวดเรื้อรัง คลายเครียด หรือข้อมูลสำคัญที่ต้องการให้ทีมรับทราบ"
+            placeholder="ระบุข้อมูลที่ต้องการให้คลินิกพาร์ทเนอร์ทราบ เพื่อใช้ประกอบการติดต่อและประเมินตามกระบวนการของคลินิก"
           />
           <span className="walker-muted text-xs">
-            ข้อมูลนี้ใช้ประกอบการประเมิน Telemed เบื้องต้น ไม่ใช่คำวินิจฉัยหรือใบอนุญาตทางการแพทย์
+            WEED WALKER ทำหน้าที่ประสานงานและส่งต่อข้อมูลเท่านั้น การประเมินและเอกสารทางการแพทย์เป็นความรับผิดชอบของคลินิกพาร์ทเนอร์
           </span>
         </label>
       </section>
@@ -204,8 +207,9 @@ export function IntakeForm() {
       <section className="grid gap-3 rounded-3xl border border-white/10 bg-white/[0.04] p-5">
         <p className="text-xs font-black uppercase tracking-[0.22em] text-walkerYellow">Data Covenant</p>
         <p className="text-sm leading-7 text-walkerMuted">
-          ข้อมูลของคุณจะถูกใช้เฉพาะเพื่อการยืนยันตัวตน การจัดการสมาชิก และการประสานงานกับคลินิกพาร์ทเนอร์
-          ตามนโยบายความเป็นส่วนตัวของ WEED WALKER
+          ข้อมูลสุขภาพ เอกสารยืนยันตัวตน และข้อมูลที่เกี่ยวข้องกับการประเมิน จะถูกใช้เพื่อการยืนยันตัวตน
+          การประสานงาน และการส่งต่อให้คลินิกพาร์ทเนอร์เท่าที่จำเป็นเท่านั้น การประเมินทางการแพทย์
+          การให้คำปรึกษา การสั่งจ่าย และการออกเอกสารทางการแพทย์เป็นความรับผิดชอบของคลินิกพาร์ทเนอร์และผู้ประกอบวิชาชีพที่ได้รับอนุญาต
         </p>
         <input name="pdpaConsent" type="hidden" value="true" />
         <input name="documentStorageConsent" type="hidden" value="true" />
@@ -230,7 +234,7 @@ export function IntakeForm() {
       </section>
 
       <button className="walker-btn walker-btn-primary w-full md:w-auto" type="submit">
-        Activate Profile
+        ส่งแบบฟอร์มเพื่อประสานคลินิกพาร์ทเนอร์
       </button>
 
       {status ? <p className="font-bold text-walkerYellow">{status}</p> : null}

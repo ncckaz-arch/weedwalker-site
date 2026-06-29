@@ -2,7 +2,7 @@ import { IntakeForm } from '@/components/intake-form';
 
 export const metadata = {
   title: 'Intake Portal | WEED WALKER',
-  description: 'WEED WALKER member intake and telemed request portal.',
+  description: 'WEED WALKER intake and licensed partner clinic referral portal.',
 };
 
 export default function IntakePage() {
@@ -37,15 +37,15 @@ export default function IntakePage() {
               Member Registration
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-8 text-[#d9d3bd]">
-              ลงทะเบียน ยืนยันข้อมูล ให้ความยินยอม และส่งคำขอ Telemed กับ WEED WALKER
-              บนโดเมนของเราโดยตรง ไม่ต้อง Login Google ในขั้นตอนแรก
+              ลงทะเบียน ยืนยันข้อมูล ให้ความยินยอม และส่งข้อมูลเพื่อให้ WEED WALKER
+              ประสานงานกับคลินิกพาร์ทเนอร์ที่ได้รับอนุญาต โดยไม่ต้อง Login Google ในขั้นตอนแรก
             </p>
           </div>
 
           <aside className="rounded-3xl border border-walkerYellow/20 bg-walkerYellow/5 p-5">
-            <p className="text-xs font-black uppercase tracking-[0.2em] text-walkerYellow">Secure Flow</p>
+            <p className="text-xs font-black uppercase tracking-[0.2em] text-walkerYellow">Referral Intake</p>
             <p className="mt-3 text-sm leading-7 text-walkerMuted">
-              ข้อมูลจะถูกบันทึกลงระบบของ WEED WALKER เพื่อใช้ประสานงานสมาชิกและคลินิกพาร์ทเนอร์เท่าที่จำเป็น
+              WEED WALKER ทำหน้าที่เก็บข้อมูลที่จำเป็นและส่งต่อให้คลินิกพาร์ทเนอร์เป็นผู้ติดต่อและประเมินตามกฎหมาย
             </p>
           </aside>
         </div>
