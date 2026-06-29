@@ -27,7 +27,8 @@ export async function POST(request: Request) {
     setSessionCookie(token);
 
     return memberRedirect(request);
-  } catch {
+  } catch (error) {
+    console.error('Google callback failed', error);
     return memberRedirect(request, 'failed');
   }
 }

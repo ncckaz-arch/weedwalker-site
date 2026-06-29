@@ -31,20 +31,53 @@ export async function verifyGoogleCredential(credential: string) {
     throw new Error('Google credential does not include required identity fields.');
   }
 
-  const user = await prisma.user.upsert({
+  const emailVerifiedAt = payload.email_verified ? new Date() : null;
+
+  const existingGoogleUser = await prisma.user.findUnique({
     where: { googleSub: payload.sub },
-    update: {
-      email: payload.email,
-      name: payload.name,
-      image: payload.picture,
-      emailVerifiedAt: payload.email_verified ? new Date() : null
-    },
-    create: {
+    include: { memberProfile: true }
+  });
+
+  if (existingGoogleUser) {
+    return prisma.user.update({
+      where: { id: existingGoogleUser.id },
+      data: {
+        email: payload.email,
+        name: payload.name,
+        image: payload.picture,
+        emailVerifiedAt
+      },
+      include: { memberProfile: true }
+    });
+  }
+
+  if (payload.email_verified) {
+    const existingEmailUser = await prisma.user.findUnique({
+      where: { email: payload.email },
+      include: { memberProfile: true }
+    });
+
+    if (existingEmailUser) {
+      return prisma.user.update({
+        where: { id: existingEmailUser.id },
+        data: {
+          googleSub: payload.sub,
+          name: payload.name,
+          image: payload.picture,
+          emailVerifiedAt
+        },
+        include: { memberProfile: true }
+      });
+    }
+  }
+
+  const user = await prisma.user.create({
+    data: {
       googleSub: payload.sub,
       email: payload.email,
       name: payload.name,
       image: payload.picture,
-      emailVerifiedAt: payload.email_verified ? new Date() : null
+      emailVerifiedAt
     },
     include: { memberProfile: true }
   });
