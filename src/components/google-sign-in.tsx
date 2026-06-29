@@ -7,7 +7,11 @@ declare global {
     google?: {
       accounts: {
         id: {
-          initialize: (options: { client_id: string; callback: (response: { credential: string }) => void }) => void;
+          initialize: (options: {
+            client_id: string;
+            ux_mode: 'redirect';
+            login_uri: string;
+          }) => void;
           renderButton: (element: HTMLElement, options: Record<string, string | number | boolean>) => void;
         };
       };
@@ -15,7 +19,7 @@ declare global {
   }
 }
 
-export function GoogleSignIn({ onVerified }: { onVerified?: () => void }) {
+export function GoogleSignIn({ onVerified: _onVerified }: { onVerified?: () => void }) {
   const buttonRef = useRef<HTMLDivElement | null>(null);
   const [error, setError] = useState('');
 
@@ -35,21 +39,8 @@ export function GoogleSignIn({ onVerified }: { onVerified?: () => void }) {
       if (!window.google || !buttonRef.current) return;
       window.google.accounts.id.initialize({
         client_id: clientId,
-        callback: async (response) => {
-          setError('');
-          const result = await fetch('/api/auth/google/verify', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ credential: response.credential })
-          });
-          if (!result.ok) {
-            const body = await result.json().catch(() => ({}));
-            setError(body.error || 'Google verification failed.');
-            return;
-          }
-          onVerified?.();
-          window.location.reload();
-        }
+        ux_mode: 'redirect',
+        login_uri: `${window.location.origin}/api/auth/google/callback`
       });
       window.google.accounts.id.renderButton(buttonRef.current, {
         theme: 'filled_black',
@@ -70,7 +61,7 @@ export function GoogleSignIn({ onVerified }: { onVerified?: () => void }) {
     script.async = true;
     script.onload = setup;
     document.head.appendChild(script);
-  }, [onVerified]);
+  }, []);
 
   return (
     <div className="grid gap-3">
