@@ -76,87 +76,9 @@ export default function IntakePage() {
         </div>
       </section>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
-        <div className="min-w-0">
-          <IntakeForm />
-        </div>
-
-        <IntakeInfoSidebar />
+      <div className="mx-auto max-w-5xl">
+        <IntakeForm />
       </div>
     </main>
-  );
-}
-
-function IntakeInfoSidebar() {
-  return (
-    <aside className="grid gap-4 lg:sticky lg:top-24">
-      <section className="walker-card p-5">
-        <div className="flex gap-4">
-          <span className="grid h-14 w-14 shrink-0 place-items-center rounded-full border border-walkerYellow/35 bg-walkerYellow/10 text-2xl text-walkerYellow">
-            ♢
-          </span>
-          <div>
-            <h2 className="text-lg font-black uppercase tracking-[0.08em] text-walkerYellow">
-              Your Privacy Is Our Priority
-            </h2>
-            <p className="mt-2 text-sm leading-7 text-walkerMuted">
-              ข้อมูลของคุณจะถูกใช้เพื่อการยืนยันตัวตน การจัดการสมาชิก และการประสานงานกับคลินิกพาร์ทเนอร์เท่าที่จำเป็นเท่านั้น
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section className="overflow-hidden rounded-[1.75rem] border border-walkerYellow/20 bg-black/45">
-        <a
-          href="/privacy-policy"
-          className="group flex items-center gap-4 border-b border-white/10 p-4 transition hover:bg-walkerYellow/5"
-        >
-          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-walkerYellow/10 text-walkerYellow">
-            ▤
-          </span>
-          <span className="min-w-0 flex-1">
-            <strong className="block text-sm font-black uppercase tracking-[0.08em] text-walkerYellow">
-              Privacy Policy
-            </strong>
-            <small className="walker-muted mt-1 block text-xs leading-5">นโยบายความเป็นส่วนตัว</small>
-          </span>
-          <span className="text-2xl leading-none text-walkerYellow transition group-hover:translate-x-1">›</span>
-        </a>
-
-        <a
-          href="/terms-of-use"
-          className="group flex items-center gap-4 border-b border-white/10 p-4 transition hover:bg-walkerYellow/5"
-        >
-          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-walkerYellow/10 text-walkerYellow">
-            ⚖
-          </span>
-          <span className="min-w-0 flex-1">
-            <strong className="block text-sm font-black uppercase tracking-[0.08em] text-walkerYellow">
-              Terms & Conditions
-            </strong>
-            <small className="walker-muted mt-1 block text-xs leading-5">
-              ข้อตกลงและเงื่อนไขการใช้งาน
-            </small>
-          </span>
-          <span className="text-2xl leading-none text-walkerYellow transition group-hover:translate-x-1">›</span>
-        </a>
-
-        <a
-          href="https://lin.ee/yNXeTBs"
-          className="group flex items-center gap-4 p-4 transition hover:bg-walkerYellow/5"
-        >
-          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-walkerYellow/10 text-walkerYellow">
-            ?
-          </span>
-          <span className="min-w-0 flex-1">
-            <strong className="block text-sm font-black uppercase tracking-[0.08em] text-walkerYellow">
-              Need Help?
-            </strong>
-            <small className="walker-muted mt-1 block text-xs leading-5">@weedwalker · weedwalkerkth@gmail.com</small>
-          </span>
-          <span className="text-2xl leading-none text-walkerYellow transition group-hover:translate-x-1">›</span>
-        </a>
-      </section>
-    </aside>
   );
 }
