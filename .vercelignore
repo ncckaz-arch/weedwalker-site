@@ -1,0 +1,15 @@
+.git
+.next
+.vercel
+node_modules
+
+.env
+.env*
+
+*.log
+*.zip
+
+data
+.tmp-secrets
+prisma-studio*.log
+start-prisma-studio.ps1

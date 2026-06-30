@@ -6,6 +6,7 @@ export default function SiteHeader() {
   const pathname = usePathname();
 
   if (
+    pathname === '/' ||
     pathname === '/intake' ||
     pathname.startsWith('/intake/') ||
     pathname === '/privacy-policy' ||

@@ -2,11 +2,14 @@ import { GoogleSignIn } from '@/components/google-sign-in';
 import { getCurrentAdminUser } from '@/lib/admin';
 import { getCurrentUser } from '@/lib/auth';
 import { prisma } from '@/lib/db';
+import Link from 'next/link';
 
 export const metadata = {
   title: 'Admin Portal | WEED WALKER',
   description: 'WEED WALKER admin intake and document overview.'
 };
+
+export const dynamic = 'force-dynamic';
 
 export default async function AdminPage() {
   const currentUser = await getCurrentUser();
@@ -57,9 +60,14 @@ export default async function AdminPage() {
   return (
     <main className="walker-shell py-8">
       <section className="mb-8">
-        <p className="mb-4 inline-flex rounded-full border border-walkerYellow/30 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-walkerYellow">
-          Admin Portal
-        </p>
+        <div className="mb-4 flex flex-wrap items-center gap-3">
+          <p className="inline-flex rounded-full border border-walkerYellow/30 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-walkerYellow">
+            Admin Portal
+          </p>
+          <Link className="walker-btn walker-btn-outline min-h-10 px-4 text-xs" href="/admin/members">
+            Customer Detail View
+          </Link>
+        </div>
         <h1 className="max-w-4xl text-5xl font-black uppercase leading-[0.9] tracking-[-0.06em] md:text-7xl">
           Intake Review.
         </h1>

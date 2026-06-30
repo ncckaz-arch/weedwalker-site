@@ -153,7 +153,11 @@ model TelemedRequest {
   intake        IntakeSubmission? @relation(fields: [intakeId], references: [id], onDelete: SetNull)
   status        TelemedStatus     @default(REQUESTED)
   preferredDate DateTime?
+  meetingLink   String?
   note          String?
+  adminNotes    String?
+  approvedAt    DateTime?
+  completedAt   DateTime?
   requestedAt   DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
   pdfDocuments  PdfDocument[]
