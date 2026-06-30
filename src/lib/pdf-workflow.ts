@@ -5,6 +5,7 @@ import fontkit from '@pdf-lib/fontkit';
 import { IntakeSubmission, PdfStatus, TelemedRequest } from '@prisma/client';
 import { degrees, PDFDocument, PDFFont, PDFPage, rgb } from 'pdf-lib';
 import { prisma } from '@/lib/db';
+import { formatPublicMemberId } from '@/lib/member-id';
 import { saveGeneratedPdf } from '@/lib/storage';
 
 const FONT_PATH = path.join(process.cwd(), 'public', 'fonts', 'NotoSansThai-Regular.ttf');
@@ -138,6 +139,7 @@ async function ensureGeneratedDocument(params: {
 async function createSignedConsentPdf(intake: IntakeWithTelemed, signatureDataUrl?: string | null) {
   const { pdfDoc, font, page, width, height } = await createBasePdf();
   const ctx: DrawContext = { page, font, width, height, y: height - 54 };
+  const publicMemberId = formatPublicMemberId(intake.id);
 
   drawHeader(ctx, 'WEED WALKER · ACCESS WITHIN · MEMBER SIGNATURE FILE');
   drawTitle(ctx, 'คำยืนยันของผู้ยื่นคำขอ', 'Signed Consent Form');
@@ -183,13 +185,14 @@ async function createSignedConsentPdf(intake: IntakeWithTelemed, signatureDataUr
     color: rgb(0.05, 0.05, 0.05)
   });
 
-  drawFooter(ctx, `เลขอ้างอิง ${intake.id}`, intake.submittedAt);
+  drawFooter(ctx, `เลขอ้างอิง ${publicMemberId}`, intake.submittedAt);
   return pdfDoc.save();
 }
 
 async function createPt33DraftPdf(intake: IntakeWithTelemed) {
   const { pdfDoc, font, page, width, height } = await createBasePdf();
   const ctx: DrawContext = { page, font, width, height, y: height - 54 };
+  const publicMemberId = formatPublicMemberId(intake.id);
 
   drawHeader(ctx, 'WEED WALKER · PARTNER CLINIC DOCUMENT WORKFLOW');
   drawTitle(ctx, 'ภ.ท.33 - Draft', 'Pending licensed partner clinic review');
@@ -198,19 +201,20 @@ async function createPt33DraftPdf(intake: IntakeWithTelemed) {
     `ชื่อ: ${intake.fullName}`,
     `เบอร์โทร: ${intake.phone}`,
     `อีเมล: ${intake.email}`,
-    `เลขอ้างอิงใบสมัคร: ${intake.id}`
+    `เลขอ้างอิงใบสมัคร: ${publicMemberId}`
   ]);
   drawSection(ctx, 'หมายเหตุสำคัญ', [
     'เอกสารนี้เป็นร่างเพื่อประกอบการประสานงานกับคลินิกพาร์ทเนอร์เท่านั้น',
     'การประเมิน การอนุมัติ และการออกเอกสาร ภ.ท.33 เป็นความรับผิดชอบของคลินิกพาร์ทเนอร์และผู้ประกอบวิชาชีพที่ได้รับอนุญาต'
   ]);
-  drawFooter(ctx, `PT33 draft for intake ${intake.id}`, new Date());
+  drawFooter(ctx, `PT33 draft for ${publicMemberId}`, new Date());
   return pdfDoc.save();
 }
 
 async function createMedicalCertificateDraftPdf(intake: IntakeWithTelemed) {
   const { pdfDoc, font, page, width, height } = await createBasePdf();
   const ctx: DrawContext = { page, font, width, height, y: height - 54 };
+  const publicMemberId = formatPublicMemberId(intake.id);
 
   drawHeader(ctx, 'WEED WALKER · PARTNER CLINIC DOCUMENT WORKFLOW');
   drawTitle(ctx, 'Medical Certificate Draft', 'For partner clinic review only');
@@ -224,13 +228,14 @@ async function createMedicalCertificateDraftPdf(intake: IntakeWithTelemed) {
     'เอกสารนี้ยังไม่ใช่ใบรับรองแพทย์ และไม่สามารถใช้แทนเอกสารทางการแพทย์ได้',
     'ต้องได้รับการประเมินและรับรองโดยคลินิกพาร์ทเนอร์และผู้ประกอบวิชาชีพที่ได้รับอนุญาตก่อนเท่านั้น'
   ]);
-  drawFooter(ctx, `Certificate draft for intake ${intake.id}`, new Date());
+  drawFooter(ctx, `Certificate draft for ${publicMemberId}`, new Date());
   return pdfDoc.save();
 }
 
 async function createMedicalCertificateFinalPendingPdf(intake: IntakeWithTelemed) {
   const { pdfDoc, font, page, width, height } = await createBasePdf();
   const ctx: DrawContext = { page, font, width, height, y: height - 54 };
+  const publicMemberId = formatPublicMemberId(intake.id);
 
   drawHeader(ctx, 'WEED WALKER · PARTNER CLINIC DOCUMENT WORKFLOW');
   drawTitle(ctx, 'Medical Certificate Final', 'Pending licensed clinic approval');
@@ -241,10 +246,10 @@ async function createMedicalCertificateFinalPendingPdf(intake: IntakeWithTelemed
   ]);
   drawSection(ctx, 'ข้อมูลอ้างอิง', [
     `ชื่อผู้ยื่นคำขอ: ${intake.fullName}`,
-    `เลขอ้างอิงใบสมัคร: ${intake.id}`,
+    `เลขอ้างอิงใบสมัคร: ${publicMemberId}`,
     `วันที่ส่งแบบฟอร์ม: ${formatDateTime(intake.submittedAt)}`
   ]);
-  drawFooter(ctx, `Final certificate pending for intake ${intake.id}`, new Date());
+  drawFooter(ctx, `Final certificate pending for ${publicMemberId}`, new Date());
   return pdfDoc.save();
 }
 

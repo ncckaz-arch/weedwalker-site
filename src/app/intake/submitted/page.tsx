@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/db';
+import { formatPublicMemberId } from '@/lib/member-id';
 
 export const metadata = {
   title: 'Application Submitted | WEED WALKER',
@@ -70,7 +71,7 @@ export default async function SubmittedPage({ searchParams }: SubmittedPageProps
 
         <div className="grid gap-5 p-5 md:p-8">
           <div className="grid gap-4 md:grid-cols-3">
-            <InfoCard label="Member ID" value={intake.id} />
+            <InfoCard label="Member ID" value={formatPublicMemberId(intake.id)} />
             <InfoCard label="Submission Date & Time" value={formatDateTime(intake.submittedAt)} />
             <InfoCard label="Current Status" value="Under Review" highlight />
           </div>

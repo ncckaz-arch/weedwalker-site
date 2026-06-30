@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { requireCurrentUser } from '@/lib/auth';
 import { prisma } from '@/lib/db';
+import { getMemberIdLookupSuffix, memberIdMatches } from '@/lib/member-id';
 
 export async function POST(request: Request) {
   try {
@@ -13,12 +14,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Member ID and Phone Number are required.' }, { status: 400 });
     }
 
-    const intake = await prisma.intakeSubmission.findUnique({
-      where: { id: memberId },
+    const lookupSuffix = getMemberIdLookupSuffix(memberId);
+    const intake = await prisma.intakeSubmission.findFirst({
+      where: {
+        OR: [
+          { id: memberId },
+          ...(lookupSuffix ? [{ id: { endsWith: lookupSuffix } }] : [])
+        ]
+      },
+      orderBy: { submittedAt: 'desc' },
       include: { telemedRequest: true }
     });
 
-    if (!intake || normalizePhone(intake.phone) !== normalizePhone(phone)) {
+    if (!intake || !memberIdMatches(intake.id, memberId) || normalizePhone(intake.phone) !== normalizePhone(phone)) {
       return NextResponse.json({ error: 'Member ID or Phone Number does not match.' }, { status: 404 });
     }
 

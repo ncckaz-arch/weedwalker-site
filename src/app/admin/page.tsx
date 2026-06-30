@@ -2,6 +2,7 @@ import { GoogleSignIn } from '@/components/google-sign-in';
 import { getCurrentAdminUser } from '@/lib/admin';
 import { getCurrentUser } from '@/lib/auth';
 import { prisma } from '@/lib/db';
+import { formatPublicMemberId } from '@/lib/member-id';
 import Link from 'next/link';
 
 export const metadata = {
@@ -82,7 +83,7 @@ export default async function AdminPage() {
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.2em] text-walkerYellow">Member ID</p>
-                <h2 className="mt-2 break-all text-2xl font-black">{intake.id}</h2>
+                <h2 className="mt-2 break-all text-2xl font-black">{formatPublicMemberId(intake.id)}</h2>
                 <p className="mt-2 text-sm text-walkerMuted">{intake.fullName} · {intake.phone}</p>
               </div>
               <div className="flex flex-wrap gap-2">

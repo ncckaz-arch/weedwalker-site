@@ -2,8 +2,7 @@ import { NextResponse } from 'next/server';
 import { createSessionToken, setSessionCookie, verifyGoogleCredential } from '@/lib/auth';
 
 function authRedirect(request: Request, reason?: string) {
-  const requestUrl = new URL(request.url);
-  const url = new URL(safeReturnPath(requestUrl.searchParams.get('returnTo')), request.url);
+  const url = new URL('/auth/redirect', request.url);
   if (reason) {
     url.searchParams.set('auth', reason);
   }
@@ -36,15 +35,4 @@ export async function POST(request: Request) {
 
 export async function GET(request: Request) {
   return authRedirect(request);
-}
-
-function safeReturnPath(value: string | null) {
-  if (!value || !value.startsWith('/')) return '/member';
-  if (value.startsWith('//')) return '/member';
-
-  const [pathWithQuery] = value.split('#');
-  const path = pathWithQuery.split('?')[0];
-  const allowedPaths = ['/member', '/admin'];
-
-  return allowedPaths.includes(path) ? pathWithQuery : '/member';
 }

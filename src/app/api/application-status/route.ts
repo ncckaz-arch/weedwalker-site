@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
 import { prisma } from '@/lib/db';
+import { formatPublicMemberId } from '@/lib/member-id';
 
 export async function GET() {
   const user = await getCurrentUser();
@@ -50,7 +51,7 @@ export async function GET() {
       name: user.name
     },
     member: {
-      memberId: intake.id,
+      memberId: formatPublicMemberId(intake.id),
       name: intake.fullName,
       phone: intake.phone,
       email: intake.email,

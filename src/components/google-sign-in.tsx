@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 
+const RETURN_TO_STORAGE_KEY = 'ww_google_auth_return_to';
+
 declare global {
   interface Window {
     google?: {
@@ -37,9 +39,14 @@ export function GoogleSignIn({ onVerified: _onVerified, returnTo }: { onVerified
 
     const setup = () => {
       if (!window.google || !buttonRef.current) return;
-      const nextPath = returnTo || `${window.location.pathname}${window.location.search}`;
+      const nextPath = safeReturnPath(returnTo || `${window.location.pathname}${window.location.search}`);
       const loginUri = new URL('/api/auth/google/callback', window.location.origin);
-      loginUri.searchParams.set('returnTo', nextPath);
+
+      try {
+        window.sessionStorage.setItem(RETURN_TO_STORAGE_KEY, nextPath);
+      } catch {
+        // Ignore storage failures and fall back to /member after sign-in.
+      }
 
       window.google.accounts.id.initialize({
         client_id: clientId,
@@ -73,4 +80,14 @@ export function GoogleSignIn({ onVerified: _onVerified, returnTo }: { onVerified
       {error ? <p className="text-sm font-bold text-red-300">{error}</p> : null}
     </div>
   );
+}
+
+function safeReturnPath(value: string) {
+  if (!value.startsWith('/') || value.startsWith('//')) return '/member';
+
+  const [pathWithQuery] = value.split('#');
+  const path = pathWithQuery.split('?')[0];
+  const isAllowedPath = path === '/member' || path === '/admin' || path.startsWith('/admin/');
+
+  return isAllowedPath ? pathWithQuery : '/member';
 }

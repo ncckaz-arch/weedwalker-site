@@ -40,6 +40,9 @@ type ActivityItem = {
   date: Date | string | null;
 };
 
+const COMBINED_CONSENT_COPY = 'ผู้สมัครยืนยัน checkbox เดียวบนหน้า Medical Intake';
+const COMBINED_CONSENT_ACCEPTED = 'ยอมรับความยินยอมรวมแล้ว';
+
 export default async function AdminMembersPage({ searchParams }: AdminMembersPageProps) {
   const currentUser = await getCurrentUser();
   const adminUser = await getCurrentAdminUser();
@@ -253,7 +256,7 @@ function CustomerDetail({
   returnTo: string;
 }) {
   const intake = customer.latestIntakeSubmission;
-  const memberId = formatAdminMemberId(customer.memberProfile?.id ?? customer.user?.id ?? intake?.id);
+  const memberId = formatAdminMemberId(intake?.id ?? customer.memberProfile?.id ?? customer.user?.id);
   const fullName = customer.memberProfile?.displayName ?? customer.user?.name ?? intake?.fullName ?? EMPTY_TEXT;
   const phone = customer.memberProfile?.phone ?? intake?.phone ?? EMPTY_TEXT;
   const email = customer.user?.email ?? intake?.email ?? EMPTY_TEXT;
@@ -384,31 +387,41 @@ function IntakeSection({ customer }: { customer: AdminCustomerDetail }) {
 }
 
 function ConsentSection({ records }: { records: ConsentRecord[] }) {
+  const combinedConsent = combinedConsentRecord(records);
+
   return (
-    <SectionCard title="Consent Record" eyebrow="Consent">
-      {records.length === 0 ? (
-        <EmptyState text={EMPTY_TEXT} />
-      ) : (
-        <div className="grid gap-3 md:grid-cols-2">
-          {records.map((record) => (
-            <div key={record.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-xs font-black uppercase tracking-[0.16em] text-walkerMuted">Consent type</p>
-                  <h3 className="mt-1 font-black">{record.consentType}</h3>
-                </div>
-                <StatusBadge value={record.accepted ? 'Accepted' : PENDING_REVIEW} />
+    <SectionCard
+      title="Combined Consent / ความยินยอมรวม"
+      eyebrow="Consent"
+      badge={combinedConsent ? (combinedConsent.accepted ? 'Accepted' : PENDING_REVIEW) : undefined}
+    >
+      <div className="grid gap-4">
+        <p className="rounded-xl border border-walkerYellow/20 bg-walkerYellow/10 p-4 text-sm font-bold leading-7 text-[#f7f3df]">
+          {COMBINED_CONSENT_COPY}
+        </p>
+
+        {combinedConsent ? (
+          <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.16em] text-walkerMuted">Consent type</p>
+                <h3 className="mt-1 font-black">Combined Consent</h3>
               </div>
-              <div className="mt-4 grid gap-3">
-                <InfoItem label="Accepted status" value={record.accepted ? 'ยอมรับแล้ว' : PENDING_REVIEW} compact />
-                <InfoItem label="Accepted date" value={formatDateTime(record.createdAt)} compact />
-                <InfoItem label="IP address" value={record.ipAddress ?? EMPTY_TEXT} compact />
-                <InfoItem label="User agent" value={record.userAgent ?? EMPTY_TEXT} compact />
-              </div>
+              <StatusBadge value={combinedConsent.accepted ? 'Accepted' : PENDING_REVIEW} />
             </div>
-          ))}
-        </div>
-      )}
+            <div className="mt-4 grid gap-3 md:grid-cols-2">
+              <InfoItem label="Accepted status" value={combinedConsent.accepted ? COMBINED_CONSENT_ACCEPTED : PENDING_REVIEW} compact />
+              <InfoItem label="Accepted date/time" value={formatDateTime(combinedConsent.createdAt)} compact />
+              <InfoItem label="IP address" value={combinedConsent.ipAddress ?? EMPTY_TEXT} compact />
+              <InfoItem label="User agent" value={combinedConsent.userAgent ?? EMPTY_TEXT} compact />
+              <InfoItem label="Version" value={combinedConsent.consentVersion ?? EMPTY_TEXT} compact />
+              <InfoItem label="Source" value={combinedConsent.intakeId ? 'Medical Intake' : EMPTY_TEXT} compact />
+            </div>
+          </div>
+        ) : (
+          <EmptyState text={EMPTY_TEXT} />
+        )}
+      </div>
     </SectionCard>
   );
 }
@@ -887,11 +900,13 @@ function activityItems(customer: AdminCustomerDetail): ActivityItem[] {
     });
   }
 
-  for (const consent of customer.consentRecords) {
+  const combinedConsent = combinedConsentRecord(customer.consentRecords);
+
+  if (combinedConsent) {
     items.push({
-      label: `Consent: ${consent.consentType}`,
-      detail: consent.accepted ? 'ยอมรับแล้ว' : PENDING_REVIEW,
-      date: consent.createdAt,
+      label: 'Combined Consent Accepted',
+      detail: combinedConsent.accepted ? COMBINED_CONSENT_ACCEPTED : PENDING_REVIEW,
+      date: combinedConsent.createdAt,
     });
   }
 
@@ -916,6 +931,19 @@ function activityItems(customer: AdminCustomerDetail): ActivityItem[] {
     const bTime = dateValue(b.date);
     return bTime - aTime;
   });
+}
+
+function combinedConsentRecord(records: ConsentRecord[]) {
+  if (records.length === 0) {
+    return null;
+  }
+
+  const acceptedRecords = records.filter((record) => record.accepted);
+  const candidates = acceptedRecords.length > 0 ? acceptedRecords : records;
+
+  return candidates.reduce((latest, record) =>
+    dateValue(record.createdAt) > dateValue(latest.createdAt) ? record : latest,
+  );
 }
 
 function findGeneratedDocument(documents: AdminGeneratedDocument[], types: string[]) {

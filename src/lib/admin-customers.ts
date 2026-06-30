@@ -9,6 +9,7 @@ import type {
 } from '@prisma/client';
 
 import { prisma } from '@/lib/db';
+import { formatPublicMemberId } from '@/lib/member-id';
 
 export type AdminGeneratedDocument = Omit<PdfDocument, 'contentBytes'> & {
   hasFile: boolean;
@@ -228,7 +229,7 @@ export function formatAdminMemberId(id?: string | null) {
     return THAI_EMPTY;
   }
 
-  return `WW-${id.slice(-8).toUpperCase()}`;
+  return formatPublicMemberId(id);
 }
 
 async function findIntakeDetail(id: string) {
@@ -257,14 +258,13 @@ function summaryFromIntake(
   },
 ): AdminCustomerSummary {
   const profile = intake.user?.memberProfile ?? null;
-  const sourceId = profile?.id ?? intake.user?.id ?? intake.id;
   const name = profile?.displayName ?? intake.user?.name ?? intake.fullName ?? THAI_EMPTY;
   const phone = profile?.phone ?? intake.phone ?? THAI_EMPTY;
   const email = intake.user?.email ?? intake.email ?? THAI_EMPTY;
 
   return {
     id: intake.id,
-    memberId: formatAdminMemberId(sourceId),
+    memberId: formatAdminMemberId(intake.id),
     name,
     phone,
     email,
@@ -406,15 +406,24 @@ function uniqueDocuments(documents: PdfDocument[]) {
 }
 
 function consentStatus(records: ConsentRecord[]) {
-  if (records.length === 0) {
+  const record = combinedConsentRecord(records);
+
+  if (!record) {
     return THAI_EMPTY;
   }
 
-  if (records.every((record) => record.accepted)) {
-    return 'Accepted';
+  return record.accepted ? 'Accepted' : 'Pending';
+}
+
+function combinedConsentRecord(records: ConsentRecord[]) {
+  if (records.length === 0) {
+    return null;
   }
 
-  return 'Pending';
+  const acceptedRecords = records.filter((record) => record.accepted);
+  const candidates = acceptedRecords.length > 0 ? acceptedRecords : records;
+
+  return candidates.reduce((latest, record) => (record.createdAt > latest.createdAt ? record : latest));
 }
 
 function maxDate(...dates: Array<Date | null | undefined>) {
