@@ -30,21 +30,21 @@ export default function IntakePage() {
             <div>
               <p className="mb-5 inline-flex items-center gap-3 text-sm font-black uppercase tracking-[0.28em] text-walkerYellow">
                 <span className="h-px w-10 bg-walkerYellow/70" />
-                Access Within
+                Member Registration
                 <span className="h-px w-10 bg-walkerYellow/70" />
               </p>
-              <h1 className="max-w-2xl text-5xl font-black uppercase leading-[0.88] tracking-[-0.08em] text-[#f8f3dc] md:text-7xl">
-                Enter The
-                <span className="block text-walkerYellow">Light Force</span>
+              <h1 className="max-w-2xl text-5xl font-black leading-[0.92] tracking-[-0.07em] text-[#f8f3dc] md:text-7xl lg:text-8xl">
+                สมัครสมาชิก
+                <span className="block">ของคุณ</span>
+                <span className="block text-walkerYellow">
+                  ทุกอย่างในที่
+                  <span className="block">เดียว</span>
+                </span>
               </h1>
-              <p className="mt-5 text-sm font-black uppercase tracking-[0.32em] text-walkerYellow md:text-base">
-                Conscious Cannabis · Terpene-Led · Curated For You
-              </p>
               <p className="mt-6 max-w-xl text-base leading-8 text-[#d9d3bd] md:text-lg">
-                แบบฟอร์มสำหรับลงทะเบียนสมาชิก ยืนยันตัวตน และส่งข้อมูลเพื่อประสานงานกับคลินิกพาร์ทเนอร์
-                โดย WEED WALKER ทำหน้าที่รับข้อมูลและส่งต่อเท่าที่จำเป็นเท่านั้น
+                ลงทะเบียน ยืนยันตัวตน เข้าถึงบริการจากคลินิกพาร์ทเนอร์ ติดตามสถานะ
+                และดาวน์โหลดเอกสารของคุณได้อย่างปลอดภัย
               </p>
-
             </div>
           </div>
 
