@@ -5,7 +5,12 @@ import { usePathname } from 'next/navigation';
 export default function SiteHeader() {
   const pathname = usePathname();
 
-  if (pathname === '/intake' || pathname.startsWith('/intake/')) {
+  if (
+    pathname === '/intake' ||
+    pathname.startsWith('/intake/') ||
+    pathname === '/privacy-policy' ||
+    pathname === '/terms-of-use'
+  ) {
     return null;
   }
 
