@@ -6,27 +6,22 @@ type SubmitResponse = {
   ok?: boolean;
   intakeId?: string;
   telemedRequestId?: string | null;
-  appsScriptWarning?: string | null;
   error?: string;
 };
 
 export function IntakeForm() {
   const [status, setStatus] = useState('');
   const [error, setError] = useState('');
-  const [warning, setWarning] = useState('');
   const [hasSignature, setHasSignature] = useState(false);
   const [idCardName, setIdCardName] = useState('');
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const drawing = useRef(false);
-  const uploadsEnabled =
-    process.env.NEXT_PUBLIC_ENABLE_FILE_UPLOADS === 'true' ||
-    process.env.NEXT_PUBLIC_APPS_SCRIPT_FORWARD_FILES === 'true';
+  const uploadsEnabled = process.env.NEXT_PUBLIC_ENABLE_FILE_UPLOADS === 'true';
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setStatus('');
     setError('');
-    setWarning('');
 
     if (!hasSignature) {
       setError('กรุณาเซ็นชื่อดิจิทัลก่อนส่งแบบฟอร์ม');
@@ -53,9 +48,6 @@ export function IntakeForm() {
     }
 
     setStatus(`ส่งข้อมูลเรียบร้อยแล้ว Reference: ${body.intakeId}`);
-    if (body.appsScriptWarning) {
-      setWarning(`ข้อมูลถูกบันทึกบน weedwalker.net แล้ว แต่การ sync ไป Apps Script ต้องตรวจสอบ: ${body.appsScriptWarning}`);
-    }
     form.reset();
     setIdCardName('');
     clearSignature();
@@ -179,7 +171,7 @@ export function IntakeForm() {
               <span className="min-w-0 flex-1">
                 <strong className="block text-base font-bold text-[#f7f3df]">Upload ID Card / Passport</strong>
                 <small className="walker-muted mt-1 block">
-                  ระบบรับข้อมูลพร้อมแล้ว แต่การอัปโหลดไฟล์จะเปิดเมื่อ storage หรือ Apps Script receiver พร้อมใช้งาน
+                  ระบบรับข้อมูลพร้อมแล้ว แต่การอัปโหลดไฟล์จะเปิดเมื่อ production storage พร้อมใช้งาน
                 </small>
               </span>
             </div>
@@ -242,7 +234,6 @@ export function IntakeForm() {
         <p className="text-center text-xs font-bold text-walkerMuted">🔒 ข้อมูลของคุณปลอดภัยและเป็นความลับ</p>
 
         {status ? <p className="rounded-2xl border border-walkerYellow/25 bg-walkerYellow/10 p-4 font-bold text-walkerYellow">{status}</p> : null}
-        {warning ? <p className="rounded-2xl border border-amber-300/25 bg-amber-300/10 p-4 text-sm font-bold text-amber-200">{warning}</p> : null}
         {error ? <p className="rounded-2xl border border-red-300/25 bg-red-400/10 p-4 font-bold text-red-300">{error}</p> : null}
       </div>
     </form>

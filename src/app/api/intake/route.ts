@@ -6,12 +6,6 @@ import { prisma } from '@/lib/db';
 import { getCurrentUser } from '@/lib/auth';
 import { emptyToNull, intakeSchema, optionalDate } from '@/lib/validators';
 import { fileUploadsEnabled, saveUpload } from '@/lib/storage';
-import {
-  appsScriptForwardRequired,
-  appsScriptForwardingEnabled,
-  fileToAppsScriptPayload,
-  forwardIntakeToAppsScript
-} from '@/lib/apps-script';
 
 export const runtime = 'nodejs';
 
@@ -147,58 +141,10 @@ export async function POST(request: Request) {
       return { intake, telemedRequest };
     });
 
-    let appsScriptForward = null;
-    let appsScriptWarning: string | null = null;
-
-    if (appsScriptForwardingEnabled()) {
-      try {
-        const appsScriptFiles = await Promise.all([
-          ...(idCard instanceof File && idCard.size > 0 ? [fileToAppsScriptPayload('idCard', idCard)] : []),
-          ...(selfie instanceof File && selfie.size > 0 ? [fileToAppsScriptPayload('selfie', selfie)] : []),
-          ...medicalDocs.map((file) => fileToAppsScriptPayload('medicalDocuments', file))
-        ]);
-
-        appsScriptForward = await forwardIntakeToAppsScript({
-          intakeId: result.intake.id,
-          submittedAt: result.intake.submittedAt.toISOString(),
-          source: 'weedwalker.net',
-          version: 'intake-v1',
-          profile: {
-            fullName: parsed.fullName,
-            phone: parsed.phone,
-            email: emptyToNull(parsed.email) || '',
-            lineId: emptyToNull(parsed.lineId)
-          },
-          telemed: {
-            conditionIntention,
-            requestTelemed: Boolean(parsed.requestTelemed || parsed.telemedConsent),
-            preferredDate: emptyToNull(parsed.preferredTelemedDate),
-            note: emptyToNull(parsed.telemedNote)
-          },
-          consents: {
-            telemedConsent: Boolean(parsed.telemedConsent || parsed.requestTelemed),
-            pdpaConsent: true,
-            medicalIntakeConsent: true,
-            documentStorageConsent: true,
-            termsConsent: Boolean(parsed.termsConsent)
-          },
-          signatureDataUrl: emptyToNull(parsed.signatureDataUrl),
-          files: appsScriptFiles
-        });
-      } catch (forwardError) {
-        appsScriptWarning = forwardError instanceof Error ? forwardError.message : 'Apps Script forward failed.';
-        if (appsScriptForwardRequired()) {
-          return NextResponse.json({ error: appsScriptWarning }, { status: 502 });
-        }
-      }
-    }
-
     return NextResponse.json({
       ok: true,
       intakeId: result.intake.id,
-      telemedRequestId: result.telemedRequest?.id || null,
-      appsScriptForward,
-      appsScriptWarning
+      telemedRequestId: result.telemedRequest?.id || null
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Intake submission failed.';
