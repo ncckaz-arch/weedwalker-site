@@ -4,6 +4,7 @@ import { randomUUID } from 'crypto';
 import { ConsentType, UploadKind } from '@prisma/client';
 import { prisma } from '@/lib/db';
 import { getCurrentUser } from '@/lib/auth';
+import { ensureIntakePdfWorkflow } from '@/lib/pdf-workflow';
 import { emptyToNull, intakeSchema, optionalDate } from '@/lib/validators';
 import { fileUploadsEnabled, saveUpload } from '@/lib/storage';
 
@@ -141,10 +142,20 @@ export async function POST(request: Request) {
       return { intake, telemedRequest };
     });
 
+    const documents = await ensureIntakePdfWorkflow({
+      intakeId: result.intake.id,
+      signatureDataUrl: parsed.signatureDataUrl
+    });
+    const successUrl = `/intake/submitted?intakeId=${encodeURIComponent(result.intake.id)}&token=${encodeURIComponent(
+      documents.signedConsentAccessToken || ''
+    )}`;
+
     return NextResponse.json({
       ok: true,
       intakeId: result.intake.id,
-      telemedRequestId: result.telemedRequest?.id || null
+      telemedRequestId: result.telemedRequest?.id || null,
+      signedConsentDocumentId: documents.signedConsentDocumentId,
+      successUrl
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Intake submission failed.';

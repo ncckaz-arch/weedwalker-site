@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
 }
 
 enum UploadKind {
@@ -37,6 +38,7 @@ enum ConsentType {
 }
 
 enum PdfStatus {
+  PROCESSING
   AVAILABLE
   REVOKED
 }
@@ -80,47 +82,48 @@ model MemberProfile {
 }
 
 model IntakeSubmission {
-  id                       String             @id @default(cuid())
-  userId                   String?
-  user                     User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
-  fullName                 String
-  email                    String
-  phone                    String
-  lineId                   String?
-  dateOfBirth              DateTime?
-  nationalIdLast4          String?
-  currentSymptoms          String?
-  intendedUse              String?
-  allergies                String?
-  medications              String?
-  priorCannabisExperience  String?
-  requestTelemed           Boolean            @default(false)
-  status                   IntakeStatus       @default(SUBMITTED)
-  submittedAt              DateTime           @default(now())
-  updatedAt                DateTime           @updatedAt
-  uploadedDocuments        UploadedDocument[]
-  consentRecords           ConsentRecord[]
-  telemedRequest           TelemedRequest?
+  id                      String             @id @default(cuid())
+  userId                  String?
+  user                    User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
+  fullName                String
+  email                   String
+  phone                   String
+  lineId                  String?
+  dateOfBirth             DateTime?
+  nationalIdLast4         String?
+  currentSymptoms         String?
+  intendedUse             String?
+  allergies               String?
+  medications             String?
+  priorCannabisExperience String?
+  requestTelemed          Boolean            @default(false)
+  status                  IntakeStatus       @default(SUBMITTED)
+  submittedAt             DateTime           @default(now())
+  updatedAt               DateTime           @updatedAt
+  uploadedDocuments       UploadedDocument[]
+  consentRecords          ConsentRecord[]
+  telemedRequest          TelemedRequest?
+  pdfDocuments            PdfDocument[]
 
   @@index([userId, submittedAt])
   @@index([email, submittedAt])
 }
 
 model UploadedDocument {
-  id            String            @id @default(cuid())
-  userId        String?
-  user          User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
-  intakeId      String?
-  intake        IntakeSubmission? @relation(fields: [intakeId], references: [id], onDelete: SetNull)
-  pdfDocumentId String?
-  pdfDocument   PdfDocument?      @relation(fields: [pdfDocumentId], references: [id], onDelete: SetNull)
-  kind          UploadKind
-  originalName  String
-  mimeType      String
-  sizeBytes     Int
-  storageKey    String
+  id             String            @id @default(cuid())
+  userId         String?
+  user           User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+  intakeId       String?
+  intake         IntakeSubmission? @relation(fields: [intakeId], references: [id], onDelete: SetNull)
+  pdfDocumentId  String?
+  pdfDocument    PdfDocument?      @relation(fields: [pdfDocumentId], references: [id], onDelete: SetNull)
+  kind           UploadKind
+  originalName   String
+  mimeType       String
+  sizeBytes      Int
+  storageKey     String
   checksumSha256 String?
-  createdAt     DateTime         @default(now())
+  createdAt      DateTime          @default(now())
 
   @@index([userId, kind])
   @@index([intakeId])
@@ -159,19 +162,25 @@ model TelemedRequest {
 }
 
 model PdfDocument {
-  id              String             @id @default(cuid())
-  userId          String
-  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id               String             @id @default(cuid())
+  userId           String?
+  user             User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
+  intakeId         String?
+  intake           IntakeSubmission?  @relation(fields: [intakeId], references: [id], onDelete: SetNull)
   telemedRequestId String?
-  telemedRequest  TelemedRequest?    @relation(fields: [telemedRequestId], references: [id], onDelete: SetNull)
-  title           String
-  documentType    String
-  storageKey      String
-  status          PdfStatus          @default(AVAILABLE)
-  createdAt       DateTime           @default(now())
-  uploadedFiles   UploadedDocument[]
+  telemedRequest   TelemedRequest?    @relation(fields: [telemedRequestId], references: [id], onDelete: SetNull)
+  title            String
+  documentType     String
+  storageKey       String?
+  contentBytes     Bytes?
+  accessToken      String?            @unique
+  status           PdfStatus          @default(AVAILABLE)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  uploadedFiles    UploadedDocument[]
 
   @@index([userId, documentType])
+  @@index([intakeId, documentType])
 }
 
 model EntertainmentActivityLog {

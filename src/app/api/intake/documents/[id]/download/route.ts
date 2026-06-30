@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { requireCurrentUser } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { readStoredPdf } from '@/lib/storage';
 
@@ -7,17 +6,19 @@ export const runtime = 'nodejs';
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   try {
-    const user = await requireCurrentUser();
     const url = new URL(request.url);
+    const token = url.searchParams.get('token') || '';
     const disposition = url.searchParams.get('disposition') === 'inline' ? 'inline' : 'attachment';
+
+    if (!token) {
+      return NextResponse.json({ error: 'Document access token is required.' }, { status: 401 });
+    }
+
     const document = await prisma.pdfDocument.findFirst({
       where: {
         id: params.id,
-        status: 'AVAILABLE',
-        OR: [
-          { userId: user.id },
-          { intake: { userId: user.id } }
-        ]
+        accessToken: token,
+        status: 'AVAILABLE'
       }
     });
 
@@ -25,11 +26,11 @@ export async function GET(request: Request, { params }: { params: { id: string }
       return NextResponse.json({ error: 'Document is not available.' }, { status: 404 });
     }
 
-    const fileName = safeFileName(`${document.documentType}-${document.id}.pdf`);
     const buffer = await readStoredPdf({
       storageKey: document.storageKey,
       contentBytes: document.contentBytes
     });
+    const fileName = safeFileName(`${document.documentType}-${document.id}.pdf`);
 
     return new Response(new Uint8Array(buffer), {
       headers: {
@@ -38,10 +39,6 @@ export async function GET(request: Request, { params }: { params: { id: string }
       }
     });
   } catch (error) {
-    if (error instanceof Error && error.message === 'AUTH_REQUIRED') {
-      return NextResponse.json({ error: 'Google verification is required.' }, { status: 401 });
-    }
-
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Document download failed.' },
       { status: 400 }

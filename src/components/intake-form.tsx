@@ -6,6 +6,8 @@ type SubmitResponse = {
   ok?: boolean;
   intakeId?: string;
   telemedRequestId?: string | null;
+  signedConsentDocumentId?: string;
+  successUrl?: string;
   error?: string;
 };
 
@@ -47,10 +49,11 @@ export function IntakeForm() {
       return;
     }
 
-    setStatus(`ส่งข้อมูลเรียบร้อยแล้ว Reference: ${body.intakeId}`);
+    setStatus('ส่งข้อมูลเรียบร้อยแล้ว กำลังเปิดหน้ายืนยัน...');
     form.reset();
     setIdCardName('');
     clearSignature();
+    window.location.assign(body.successUrl || `/intake/submitted?intakeId=${encodeURIComponent(body.intakeId || '')}`);
   }
 
   function point(event: PointerEvent<HTMLCanvasElement>) {

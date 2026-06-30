@@ -39,6 +39,16 @@ export async function POST(request: Request) {
         });
       }
 
+      await tx.uploadedDocument.updateMany({
+        where: { intakeId: intake.id },
+        data: { userId: user.id }
+      });
+
+      await tx.pdfDocument.updateMany({
+        where: { intakeId: intake.id },
+        data: { userId: user.id }
+      });
+
       await tx.memberProfile.upsert({
         where: { userId: user.id },
         update: {

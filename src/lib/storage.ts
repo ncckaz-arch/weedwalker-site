@@ -1,5 +1,5 @@
 import { createHash, randomUUID } from 'crypto';
-import { mkdir, writeFile } from 'fs/promises';
+import { mkdir, readFile, writeFile } from 'fs/promises';
 import path from 'path';
 import { Storage, type StorageOptions } from '@google-cloud/storage';
 import { UploadKind } from '@prisma/client';
@@ -7,6 +7,12 @@ import { UploadKind } from '@prisma/client';
 export type SavedUpload = {
   storageKey: string;
   checksumSha256: string;
+};
+
+export type SavedGeneratedPdf = {
+  storageKey: string;
+  checksumSha256: string;
+  contentBytes?: Buffer;
 };
 
 const allowedMimeTypes = new Set([
@@ -87,6 +93,85 @@ export async function saveUpload(params: {
   return { storageKey, checksumSha256 };
 }
 
+export async function saveGeneratedPdf(params: {
+  ownerKey: string;
+  documentType: string;
+  pdfBytes: Uint8Array | Buffer;
+}): Promise<SavedGeneratedPdf> {
+  const buffer = Buffer.from(params.pdfBytes);
+  const checksumSha256 = createHash('sha256').update(buffer).digest('hex');
+  const storageKey = [
+    'generated-pdfs',
+    safePathPart(params.ownerKey),
+    safePathPart(params.documentType.toLowerCase()),
+    `${Date.now()}-${randomUUID()}.pdf`
+  ].join('/');
+
+  const bucketName = process.env.GCS_BUCKET_NAME;
+  if (bucketName) {
+    const storage = new Storage(googleStorageOptions());
+    await storage.bucket(bucketName).file(storageKey).save(buffer, {
+      resumable: false,
+      contentType: 'application/pdf',
+      metadata: {
+        metadata: {
+          checksumSha256,
+          generatedBy: 'weedwalker-experience-platform'
+        }
+      }
+    });
+    return { storageKey, checksumSha256 };
+  }
+
+  if (process.env.NODE_ENV !== 'production') {
+    const localRoot = process.env.LOCAL_UPLOAD_DIR || './data/uploads';
+    const fullPath = path.join(process.cwd(), localRoot, storageKey);
+    await mkdir(path.dirname(fullPath), { recursive: true });
+    await writeFile(fullPath, buffer);
+    return { storageKey, checksumSha256 };
+  }
+
+  return {
+    storageKey: `db://${storageKey}`,
+    checksumSha256,
+    contentBytes: buffer
+  };
+}
+
+export async function readStoredPdf(params: {
+  storageKey: string | null;
+  contentBytes?: Buffer | Uint8Array | null;
+}): Promise<Buffer> {
+  if (params.contentBytes) {
+    return Buffer.from(params.contentBytes);
+  }
+
+  if (!params.storageKey) {
+    throw new Error('Document file is not available yet.');
+  }
+
+  const bucketName = process.env.GCS_BUCKET_NAME;
+  if (bucketName && !params.storageKey.startsWith('db://')) {
+    const storage = new Storage(googleStorageOptions());
+    const [buffer] = await storage.bucket(bucketName).file(params.storageKey).download();
+    return Buffer.from(buffer);
+  }
+
+  if (process.env.NODE_ENV !== 'production' && !params.storageKey.startsWith('db://')) {
+    const localRoot = process.env.LOCAL_UPLOAD_DIR || './data/uploads';
+    const root = path.resolve(process.cwd(), localRoot);
+    const filePath = path.resolve(root, params.storageKey);
+
+    if (!filePath.startsWith(root)) {
+      throw new Error('Invalid document path.');
+    }
+
+    return readFile(filePath);
+  }
+
+  throw new Error('Document storage is not configured.');
+}
+
 export function googleStorageOptions(): StorageOptions {
   const rawCredentials =
     process.env.GOOGLE_CLOUD_CREDENTIALS_JSON ||
@@ -125,4 +210,8 @@ function safeExtension(fileName: string, mimeType: string) {
   if (mimeType === 'image/webp') return '.webp';
   if (mimeType === 'application/pdf') return '.pdf';
   return '';
+}
+
+function safePathPart(value: string) {
+  return value.replace(/[^a-z0-9_-]/gi, '-').replace(/-+/g, '-').slice(0, 90) || 'document';
 }
