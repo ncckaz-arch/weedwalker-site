@@ -138,9 +138,19 @@ button {
   padding-top: 16px;
 }
 
+.access-field-plain {
+  display: block;
+  padding: 20px;
+}
+
 .access-field textarea {
   min-height: 96px;
   resize: vertical;
+}
+
+.access-field-plain textarea {
+  min-height: 128px;
+  line-height: 1.75;
 }
 
 .access-icon {

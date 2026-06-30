@@ -140,14 +140,16 @@ export function IntakeForm() {
           </label>
         </div>
 
-        <label className="access-field access-field-area">
-          <span className="access-icon pt-1">☤</span>
+        <label className="access-field access-field-area access-field-plain">
           <textarea
             name="conditionIntention"
             required
             maxLength={1000}
-            placeholder="ข้อมูลสุขภาพ / รายละเอียดที่ต้องการให้คลินิกพาร์ทเนอร์ทราบ"
+            placeholder="ระบุอาการ โรค หรือเหตุผลที่ต้องการใช้กัญชา เช่น นอนไม่หลับ ปวดเรื้อรัง คลายเครียด หรือข้อมูลสำคัญที่ต้องการให้คลินิกพาร์ทเนอร์รับทราบ"
           />
+          <span className="walker-muted mt-3 block text-xs leading-5">
+            ข้อมูลนี้ใช้ประกอบการส่งต่อให้คลินิกพาร์ทเนอร์เบื้องต้น ไม่ใช่คำวินิจฉัยหรือเอกสารทางการแพทย์
+          </span>
         </label>
 
         <div>
