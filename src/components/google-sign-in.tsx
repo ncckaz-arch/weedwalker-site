@@ -19,7 +19,7 @@ declare global {
   }
 }
 
-export function GoogleSignIn({ onVerified: _onVerified }: { onVerified?: () => void }) {
+export function GoogleSignIn({ onVerified: _onVerified, returnTo }: { onVerified?: () => void; returnTo?: string }) {
   const buttonRef = useRef<HTMLDivElement | null>(null);
   const [error, setError] = useState('');
 
@@ -37,10 +37,14 @@ export function GoogleSignIn({ onVerified: _onVerified }: { onVerified?: () => v
 
     const setup = () => {
       if (!window.google || !buttonRef.current) return;
+      const nextPath = returnTo || `${window.location.pathname}${window.location.search}`;
+      const loginUri = new URL('/api/auth/google/callback', window.location.origin);
+      loginUri.searchParams.set('returnTo', nextPath);
+
       window.google.accounts.id.initialize({
         client_id: clientId,
         ux_mode: 'redirect',
-        login_uri: `${window.location.origin}/api/auth/google/callback`
+        login_uri: loginUri.toString()
       });
       window.google.accounts.id.renderButton(buttonRef.current, {
         theme: 'filled_black',
@@ -61,7 +65,7 @@ export function GoogleSignIn({ onVerified: _onVerified }: { onVerified?: () => v
     script.async = true;
     script.onload = setup;
     document.head.appendChild(script);
-  }, []);
+  }, [returnTo]);
 
   return (
     <div className="grid gap-3">
