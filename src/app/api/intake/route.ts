@@ -23,7 +23,6 @@ export async function POST(request: Request) {
     }
 
     const idCard = formData.get('idCard');
-    const selfie = formData.get('selfie');
     const medicalDocs = formData.getAll('medicalDocuments').filter((item): item is File => item instanceof File && item.size > 0);
 
     if (uploadsEnabled && (!(idCard instanceof File) || idCard.size === 0)) {
@@ -37,7 +36,6 @@ export async function POST(request: Request) {
     const uploadedFiles = uploadsEnabled
       ? [
           ...(idCard instanceof File && idCard.size > 0 ? [{ kind: UploadKind.ID_CARD, file: idCard }] : []),
-          ...(selfie instanceof File && selfie.size > 0 ? [{ kind: UploadKind.SELFIE, file: selfie }] : []),
           ...medicalDocs.map((file) => ({ kind: UploadKind.MEDICAL_DOCUMENT, file }))
         ]
       : [];

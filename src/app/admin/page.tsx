@@ -49,6 +49,11 @@ export default async function AdminPage() {
     include: {
       telemedRequest: true,
       uploadedDocuments: {
+        where: {
+          kind: {
+            not: 'SELFIE'
+          }
+        },
         orderBy: { createdAt: 'desc' },
         take: 3
       },

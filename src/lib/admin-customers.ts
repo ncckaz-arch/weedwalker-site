@@ -61,6 +61,11 @@ const intakeDetailInclude = {
     },
   },
   uploadedDocuments: {
+    where: {
+      kind: {
+        not: 'SELFIE' as const,
+      },
+    },
     orderBy: {
       createdAt: 'desc' as const,
     },
@@ -101,6 +106,11 @@ const userDetailInclude = {
     },
   },
   uploadedDocuments: {
+    where: {
+      kind: {
+        not: 'SELFIE' as const,
+      },
+    },
     orderBy: {
       createdAt: 'desc' as const,
     },

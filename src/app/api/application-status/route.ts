@@ -16,6 +16,11 @@ export async function GET() {
     include: {
       telemedRequest: true,
       uploadedDocuments: {
+        where: {
+          kind: {
+            not: 'SELFIE'
+          }
+        },
         orderBy: { createdAt: 'desc' },
         take: 1
       }
@@ -228,9 +233,7 @@ function latestUpload(upload?: { kind: string; originalName: string; createdAt: 
     title:
       upload.kind === 'ID_CARD'
         ? 'Thai ID Card / Passport'
-        : upload.kind === 'SELFIE'
-          ? 'Selfie Verification'
-          : 'Uploaded Medical Document',
+        : 'Uploaded Medical Document',
     originalName: upload.originalName,
     status: 'Uploaded',
     uploadedAt: upload.createdAt.toLocaleString('th-TH', { dateStyle: 'medium', timeStyle: 'short' })
