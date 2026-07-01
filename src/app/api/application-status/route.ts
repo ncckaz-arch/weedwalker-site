@@ -59,7 +59,7 @@ export async function GET() {
       memberId: formatPublicMemberId(intake.id),
       name: intake.fullName,
       phone: intake.phone,
-      email: intake.email,
+      email: user.email,
       verified: true
     },
     current,

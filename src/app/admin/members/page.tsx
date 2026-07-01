@@ -70,6 +70,12 @@ export default async function AdminMembersPage({ searchParams }: AdminMembersPag
           <p className="mt-4 max-w-2xl text-sm leading-7 text-walkerMuted">
             บัญชี {currentUser.email} ยังไม่มีสิทธิ์ admin หรือยังไม่ได้ตั้งค่า ADMIN_EMAILS / ADMIN_EMAIL ใน Vercel
           </p>
+          <form action="/api/auth/logout" className="mt-6" method="post">
+            <input type="hidden" name="returnTo" value="/admin/members" />
+            <button className="rounded-xl bg-walkerYellow px-5 py-3 text-sm font-black text-black" type="submit">
+              ออกจากระบบ / เลือกบัญชีใหม่
+            </button>
+          </form>
         </section>
       </main>
     );
@@ -512,6 +518,7 @@ function AdminActions({
   const intakeId = customer.latestIntakeSubmission?.id;
   const telemedId = customer.telemedRequests[0]?.id;
   const telemedRequest = customer.telemedRequests[0] ?? null;
+  const defaultMemberEmail = customer.user?.email ?? normalizeDisplayEmail(customer.latestIntakeSubmission?.email);
 
   return (
     <aside className="sticky top-5 grid self-start rounded-2xl border border-white/10 bg-black/55 p-5 shadow-[0_0_60px_rgba(0,0,0,0.35)]">
@@ -541,6 +548,12 @@ function AdminActions({
           defaultMeetingLink={telemedRequest?.meetingLink ?? ''}
           defaultAdminNotes={telemedRequest?.adminNotes ?? ''}
           defaultMeetingDate={formatDateTimeInput(telemedRequest?.preferredDate)}
+        />
+        <MemberEmailLinkForm
+          customerId={selectedId}
+          returnTo={returnTo}
+          disabled={!intakeId}
+          defaultEmail={defaultMemberEmail}
         />
         <ActionForm
           customerId={selectedId}
@@ -572,6 +585,10 @@ function AdminActions({
           disabled={!intakeId}
         />
         <CopyMemberPortalLink href="/member" />
+        <DeleteCustomerForm
+          customerId={selectedId}
+          returnTo={returnTo}
+        />
       </div>
     </aside>
   );
@@ -608,6 +625,48 @@ function ActionForm({
         type="submit"
       >
         {label}
+      </button>
+    </form>
+  );
+}
+
+function DeleteCustomerForm({
+  customerId,
+  returnTo,
+}: {
+  customerId: string | null;
+  returnTo: string;
+}) {
+  return (
+    <form
+      action={customerId ? `/api/admin/customers/${customerId}/actions` : '#'}
+      className="mt-3 grid gap-2 rounded-xl border border-red-400/30 bg-red-500/10 p-3"
+      method="post"
+    >
+      <input type="hidden" name="action" value="delete-customer" />
+      <input type="hidden" name="returnTo" value={returnTo} />
+      <p className="text-xs font-black uppercase tracking-[0.16em] text-red-200">Danger Zone</p>
+      <p className="text-xs leading-5 text-red-100/75">
+        ลบ member/application นี้พร้อมข้อมูลที่เกี่ยวข้องทั้งหมด เช่น intake, uploads, consent, telemed และ PDF records.
+      </p>
+      <label className="grid gap-1 text-xs font-black uppercase tracking-[0.14em] text-red-200">
+        Type DELETE to confirm
+        <input
+          className="min-h-10 rounded-lg border border-red-300/25 bg-black/45 px-3 text-sm normal-case tracking-normal text-white outline-none focus:border-red-300/60"
+          disabled={!customerId}
+          name="confirmDelete"
+          pattern="DELETE"
+          placeholder="DELETE"
+          required
+          type="text"
+        />
+      </label>
+      <button
+        className="min-h-10 rounded-lg border border-red-300/35 bg-red-500/20 px-3 text-left text-sm font-black text-red-100 transition hover:border-red-300/65 hover:bg-red-500/25 disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-white/[0.03] disabled:text-walkerMuted"
+        disabled={!customerId}
+        type="submit"
+      >
+        Delete Member / Application
       </button>
     </form>
   );
@@ -673,6 +732,50 @@ function MeetingLinkForm({
         type="submit"
       >
         บันทึก Meeting Link
+      </button>
+    </form>
+  );
+}
+
+function MemberEmailLinkForm({
+  customerId,
+  returnTo,
+  disabled,
+  defaultEmail,
+}: {
+  customerId: string | null;
+  returnTo: string;
+  disabled?: boolean;
+  defaultEmail: string;
+}) {
+  return (
+    <form
+      action={customerId ? `/api/admin/customers/${customerId}/actions` : '#'}
+      className="grid gap-2 rounded-xl border border-emerald-300/20 bg-emerald-300/10 p-3"
+      method="post"
+    >
+      <input type="hidden" name="action" value="link-member-email" />
+      <input type="hidden" name="returnTo" value={returnTo} />
+      <label className="grid gap-1 text-xs font-black uppercase tracking-[0.14em] text-emerald-200">
+        Link Member Email
+        <input
+          className="min-h-10 rounded-lg border border-white/10 bg-black/35 px-3 text-sm normal-case tracking-normal text-white outline-none focus:border-emerald-300/50"
+          defaultValue={defaultEmail}
+          disabled={disabled || !customerId}
+          name="email"
+          placeholder="customer@gmail.com"
+          type="email"
+        />
+      </label>
+      <p className="text-xs leading-5 text-emerald-100/75">
+        ใส่อีเมล Google ของลูกค้าเพื่อผูกกับใบสมัครนี้ ถ้าลูกค้าเคย login แล้วจะเชื่อมทันที ถ้ายัง ระบบจะเชื่อมให้อัตโนมัติเมื่อ login ด้วยอีเมลนี้
+      </p>
+      <button
+        className="min-h-10 rounded-lg border border-emerald-300/30 bg-emerald-300/15 px-3 text-left text-sm font-black text-emerald-100 transition hover:border-emerald-300/55 hover:bg-emerald-300/20 disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-white/[0.03] disabled:text-walkerMuted"
+        disabled={disabled || !customerId}
+        type="submit"
+      >
+        ผูกอีเมลกับใบสมัคร
       </button>
     </form>
   );
@@ -1050,6 +1153,14 @@ function statusLabel(value: string | null | undefined) {
   };
 
   return labels[raw.toUpperCase()] ?? raw;
+}
+
+function normalizeDisplayEmail(value: string | null | undefined) {
+  if (!value || value.endsWith('@intake.weedwalker.local')) {
+    return '';
+  }
+
+  return value;
 }
 
 function valueOrEmpty(value: string | number | null | undefined): string {

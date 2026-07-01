@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 
 import { getAdminCustomerDetail } from '@/lib/admin-customers';
+import { linkIntakeToUser, normalizeEmail } from '@/lib/application-linking';
 import { requireCurrentAdminUser } from '@/lib/admin';
 import { prisma } from '@/lib/db';
 import { ensureIntakePdfWorkflow } from '@/lib/pdf-workflow';
@@ -21,7 +22,7 @@ type RouteContext = {
 
 export async function POST(request: Request, { params }: RouteContext) {
   try {
-    await requireCurrentAdminUser();
+    const adminUser = await requireCurrentAdminUser();
 
     const form = await request.formData();
     const action = String(form.get('action') ?? '');
@@ -35,6 +36,23 @@ export async function POST(request: Request, { params }: RouteContext) {
     const intakeId = customer.latestIntakeSubmission?.id;
     const telemedId = customer.telemedRequests[0]?.id;
     const userId = customer.user?.id ?? null;
+
+    if (action === 'delete-customer') {
+      const confirmation = String(form.get('confirmDelete') ?? '').trim().toUpperCase();
+
+      if (confirmation !== 'DELETE') {
+        return NextResponse.json({ error: 'DELETE_CONFIRMATION_REQUIRED' }, { status: 400 });
+      }
+
+      if (userId && userId === adminUser.id) {
+        return NextResponse.json({ error: 'SELF_DELETE_NOT_ALLOWED' }, { status: 400 });
+      }
+
+      await deleteCustomerData(customer);
+      revalidatePath('/admin/members');
+
+      return NextResponse.redirect(new URL('/admin/members', request.url), { status: 303 });
+    }
 
     if (action === 'approve-intake' && intakeId) {
       await prisma.intakeSubmission.update({
@@ -93,6 +111,36 @@ export async function POST(request: Request, { params }: RouteContext) {
             approvedAt: new Date(),
           },
         });
+      }
+    }
+
+    if (action === 'link-member-email' && intakeId) {
+      const email = normalizeEmail(String(form.get('email') ?? ''));
+
+      if (!email) {
+        return NextResponse.json({ error: 'EMAIL_REQUIRED' }, { status: 400 });
+      }
+
+      const existingUser = await prisma.user.findUnique({
+        where: {
+          email,
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      await prisma.intakeSubmission.update({
+        where: {
+          id: intakeId,
+        },
+        data: {
+          email,
+        },
+      });
+
+      if (existingUser) {
+        await linkIntakeToUser(intakeId, existingUser.id);
       }
     }
 
@@ -235,4 +283,205 @@ function parseOptionalDate(value: string) {
   }
 
   return date;
+}
+
+async function deleteCustomerData(customer: NonNullable<Awaited<ReturnType<typeof getAdminCustomerDetail>>>) {
+  const userId = customer.user?.id ?? null;
+  const selectedIntakeId = customer.latestIntakeSubmission?.id ?? null;
+
+  await prisma.$transaction(async (tx) => {
+    const intakeIds = new Set<string>();
+    const telemedIds = new Set<string>();
+    const pdfIds = new Set<string>();
+
+    if (selectedIntakeId) {
+      intakeIds.add(selectedIntakeId);
+    }
+
+    if (userId) {
+      const userIntakes = await tx.intakeSubmission.findMany({
+        where: {
+          userId,
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      for (const intake of userIntakes) {
+        intakeIds.add(intake.id);
+      }
+    }
+
+    if (userId) {
+      const userTelemedRequests = await tx.telemedRequest.findMany({
+        where: {
+          userId,
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      for (const telemed of userTelemedRequests) {
+        telemedIds.add(telemed.id);
+      }
+    }
+
+    if (intakeIds.size > 0) {
+      const intakeTelemedRequests = await tx.telemedRequest.findMany({
+        where: {
+          intakeId: {
+            in: [...intakeIds],
+          },
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      for (const telemed of intakeTelemedRequests) {
+        telemedIds.add(telemed.id);
+      }
+    }
+
+    if (userId) {
+      const userPdfs = await tx.pdfDocument.findMany({
+        where: {
+          userId,
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      for (const document of userPdfs) {
+        pdfIds.add(document.id);
+      }
+    }
+
+    if (intakeIds.size > 0) {
+      const intakePdfs = await tx.pdfDocument.findMany({
+        where: {
+          intakeId: {
+            in: [...intakeIds],
+          },
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      for (const document of intakePdfs) {
+        pdfIds.add(document.id);
+      }
+    }
+
+    if (telemedIds.size > 0) {
+      const telemedPdfs = await tx.pdfDocument.findMany({
+        where: {
+          telemedRequestId: {
+            in: [...telemedIds],
+          },
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      for (const document of telemedPdfs) {
+        pdfIds.add(document.id);
+      }
+    }
+
+    if (userId) {
+      await tx.entertainmentActivityLog.deleteMany({
+        where: {
+          userId,
+        },
+      });
+
+      await tx.uploadedDocument.deleteMany({
+        where: {
+          userId,
+        },
+      });
+
+      await tx.consentRecord.deleteMany({
+        where: {
+          userId,
+        },
+      });
+    }
+
+    if (intakeIds.size > 0) {
+      await tx.uploadedDocument.deleteMany({
+        where: {
+          intakeId: {
+            in: [...intakeIds],
+          },
+        },
+      });
+
+      await tx.consentRecord.deleteMany({
+        where: {
+          intakeId: {
+            in: [...intakeIds],
+          },
+        },
+      });
+    }
+
+    if (pdfIds.size > 0) {
+      await tx.uploadedDocument.deleteMany({
+        where: {
+          pdfDocumentId: {
+            in: [...pdfIds],
+          },
+        },
+      });
+
+      await tx.pdfDocument.deleteMany({
+        where: {
+          id: {
+            in: [...pdfIds],
+          },
+        },
+      });
+    }
+
+    if (telemedIds.size > 0) {
+      await tx.telemedRequest.deleteMany({
+        where: {
+          id: {
+            in: [...telemedIds],
+          },
+        },
+      });
+    }
+
+    if (intakeIds.size > 0) {
+      await tx.intakeSubmission.deleteMany({
+        where: {
+          id: {
+            in: [...intakeIds],
+          },
+        },
+      });
+    }
+
+    if (userId) {
+      await tx.memberProfile.deleteMany({
+        where: {
+          userId,
+        },
+      });
+
+      await tx.user.deleteMany({
+        where: {
+          id: userId,
+        },
+      });
+    }
+  });
 }
