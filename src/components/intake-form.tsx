@@ -36,6 +36,7 @@ export function IntakeForm() {
     const formData = new FormData(form);
     const signature = canvasRef.current?.toDataURL('image/png') || '';
     formData.set('signatureDataUrl', signature);
+    await attachAppsScriptProcessedImage(formData, signature);
 
     const response = await fetch('/api/intake', {
       method: 'POST',
@@ -246,4 +247,191 @@ export function IntakeForm() {
       </div>
     </form>
   );
+}
+
+async function attachAppsScriptProcessedImage(formData: FormData, signatureDataUrl: string) {
+  if (process.env.NEXT_PUBLIC_APPS_SCRIPT_FORWARD_FILES !== 'true') {
+    return;
+  }
+
+  const idCard = formData.get('idCard');
+
+  if (!(idCard instanceof File) || idCard.size === 0) {
+    return;
+  }
+
+  try {
+    const idCardDataUrl = await readFileAsDataUrl(idCard);
+    const processedImage = await buildAppsScriptProcessedImage({
+      idCardDataUrl,
+      signatureDataUrl,
+      fullName: String(formData.get('fullName') || ''),
+      phone: String(formData.get('phone') || ''),
+      email: String(formData.get('email') || ''),
+      condition: String(formData.get('conditionIntention') || '')
+    });
+
+    formData.set('appScriptProcessedImageDataUrl', processedImage);
+  } catch (error) {
+    console.warn('[apps-script-bridge] unable to build processed image', error);
+  }
+}
+
+function readFileAsDataUrl(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ''));
+    reader.onerror = () => reject(reader.error || new Error('Unable to read file.'));
+    reader.readAsDataURL(file);
+  });
+}
+
+function loadImage(src: string) {
+  return new Promise<HTMLImageElement>((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error('Unable to load image.'));
+    image.src = src;
+  });
+}
+
+async function buildAppsScriptProcessedImage({
+  idCardDataUrl,
+  signatureDataUrl,
+  fullName,
+  phone,
+  email,
+  condition
+}: {
+  idCardDataUrl: string;
+  signatureDataUrl: string;
+  fullName: string;
+  phone: string;
+  email: string;
+  condition: string;
+}) {
+  const [idImage, signatureImage] = await Promise.all([
+    loadImage(idCardDataUrl),
+    signatureDataUrl ? loadImage(signatureDataUrl) : Promise.resolve(null)
+  ]);
+  const canvas = document.createElement('canvas');
+  canvas.width = 1200;
+  canvas.height = 1700;
+  const ctx = canvas.getContext('2d');
+
+  if (!ctx) {
+    throw new Error('Canvas is not available.');
+  }
+
+  ctx.fillStyle = '#f6f0db';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#050505';
+  ctx.fillRect(0, 0, canvas.width, 92);
+  ctx.fillStyle = '#ffd21a';
+  ctx.font = 'bold 28px Arial, sans-serif';
+  ctx.fillText('WEED WALKER · ACCESS WITHIN · MEMBER SIGNATURE FILE', 72, 58);
+
+  const imageBox = { x: 170, y: 120, width: 860, height: 620 };
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(imageBox.x - 14, imageBox.y - 14, imageBox.width + 28, imageBox.height + 28);
+  ctx.shadowColor = 'rgba(0,0,0,0.22)';
+  ctx.shadowBlur = 22;
+  drawImageContain(ctx, idImage, imageBox.x, imageBox.y, imageBox.width, imageBox.height);
+  ctx.shadowBlur = 0;
+
+  ctx.save();
+  ctx.translate(600, 710);
+  ctx.rotate(-Math.PI / 5.5);
+  ctx.globalAlpha = 0.18;
+  ctx.fillStyle = '#111111';
+  ctx.font = 'bold 54px Arial, sans-serif';
+  for (let y = -520; y <= 520; y += 150) {
+    ctx.fillText('ใช้ประกอบคำขอ WEED WALKER เท่านั้น', -640, y);
+    ctx.fillText('WEED WALKER ONLY', 160, y + 72);
+  }
+  ctx.restore();
+
+  ctx.fillStyle = '#111111';
+  ctx.font = 'bold 44px Arial, sans-serif';
+  ctx.fillText('คำยืนยันของผู้ยื่นคำขอ', 72, 835);
+  ctx.font = '36px Arial, sans-serif';
+  const lines = [
+    `ข้าพเจ้า ${fullName || '-'} สมาชิกเบอร์โทร ${phone || '-'} อีเมล ${email || '-'}`,
+    'ยืนยันว่าได้ให้ข้อมูลสำหรับการสมัครสมาชิกและการประสานงานกับคลินิกพาร์ทเนอร์ตามความจริง',
+    `ข้อมูลสุขภาพ/เหตุผลที่แจ้ง: ${condition || '-'}`,
+    'ข้าพเจ้ารับทราบว่าเอกสารนี้เป็นเพียงหลักฐานการรับข้อมูลเบื้องต้น',
+    'ไม่ใช่คำวินิจฉัย ใบอนุญาต หรือเอกสารทางการแพทย์'
+  ];
+  let y = 905;
+
+  for (const line of lines) {
+    y = drawWrappedLine(ctx, line, 72, y, 1060, 48);
+    y += 10;
+  }
+
+  ctx.strokeStyle = '#111111';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(700, 1500);
+  ctx.lineTo(1100, 1500);
+  ctx.stroke();
+
+  if (signatureImage) {
+    drawImageContain(ctx, signatureImage, 760, 1330, 280, 130);
+  }
+
+  ctx.font = 'bold 34px Arial, sans-serif';
+  ctx.fillText('ลงลายมือชื่อผู้ยื่นคำขอ', 762, 1548);
+  ctx.font = '24px Arial, sans-serif';
+  ctx.fillText(`ออกเมื่อ ${new Date().toLocaleDateString('th-TH')}`, 822, 1584);
+
+  return canvas.toDataURL('image/jpeg', 0.88);
+}
+
+function drawImageContain(
+  ctx: CanvasRenderingContext2D,
+  image: HTMLImageElement,
+  x: number,
+  y: number,
+  width: number,
+  height: number
+) {
+  const ratio = Math.min(width / image.width, height / image.height);
+  const drawWidth = image.width * ratio;
+  const drawHeight = image.height * ratio;
+  const drawX = x + (width - drawWidth) / 2;
+  const drawY = y + (height - drawHeight) / 2;
+
+  ctx.drawImage(image, drawX, drawY, drawWidth, drawHeight);
+}
+
+function drawWrappedLine(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  x: number,
+  y: number,
+  maxWidth: number,
+  lineHeight: number
+) {
+  const words = text.split(' ');
+  let line = '';
+  let currentY = y;
+
+  for (const word of words) {
+    const testLine = line ? `${line} ${word}` : word;
+
+    if (ctx.measureText(testLine).width > maxWidth && line) {
+      ctx.fillText(line, x, currentY);
+      line = word;
+      currentY += lineHeight;
+    } else {
+      line = testLine;
+    }
+  }
+
+  if (line) {
+    ctx.fillText(line, x, currentY);
+  }
+
+  return currentY + lineHeight;
 }

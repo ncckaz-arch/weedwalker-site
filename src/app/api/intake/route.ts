@@ -7,6 +7,7 @@ import { getCurrentUser } from '@/lib/auth';
 import { ensureIntakePdfWorkflow } from '@/lib/pdf-workflow';
 import { emptyToNull, intakeSchema, optionalDate } from '@/lib/validators';
 import { fileUploadsEnabled, saveUpload } from '@/lib/storage';
+import { appScriptBridgeRequired, forwardIntakeToAppsScript } from '@/lib/appscript-bridge';
 
 export const runtime = 'nodejs';
 
@@ -145,6 +146,35 @@ export async function POST(request: Request) {
       intakeId: result.intake.id,
       signatureDataUrl: parsed.signatureDataUrl
     });
+    const appScriptProcessedImageDataUrl = formData.get('appScriptProcessedImageDataUrl');
+    const appScriptForward = await forwardIntakeToAppsScript({
+      intake: result.intake,
+      idCardFile: idCard instanceof File ? idCard : null,
+      processedImageDataUrl:
+        typeof appScriptProcessedImageDataUrl === 'string'
+          ? appScriptProcessedImageDataUrl
+          : null,
+      symptoms: conditionIntention
+    });
+
+    if (!appScriptForward.ok) {
+      console.error('[apps-script-bridge] intake forward failed', {
+        intakeId: result.intake.id,
+        reason: appScriptForward.reason,
+        response: appScriptForward.response
+      });
+
+      if (appScriptBridgeRequired()) {
+        return NextResponse.json(
+          {
+            error: 'บันทึกข้อมูลในเว็บสำเร็จแล้ว แต่ส่งต่อระบบ App Script เดิมไม่สำเร็จ กรุณาติดต่อแอดมิน',
+            intakeId: result.intake.id
+          },
+          { status: 502 }
+        );
+      }
+    }
+
     const successUrl = `/intake/submitted?intakeId=${encodeURIComponent(result.intake.id)}&token=${encodeURIComponent(
       documents.signedConsentAccessToken || ''
     )}`;
