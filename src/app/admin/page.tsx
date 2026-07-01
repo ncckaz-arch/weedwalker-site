@@ -105,6 +105,16 @@ export default async function AdminPage() {
                     <div key={upload.id} className="rounded-2xl bg-black/30 p-3">
                       <p className="text-sm font-black">{upload.kind}</p>
                       <p className="mt-1 break-all text-xs text-walkerMuted">{upload.originalName}</p>
+                      {upload.storageKey || upload.contentBytes ? (
+                        <a
+                          className="walker-btn walker-btn-outline mt-3 w-full text-xs"
+                          href={`/api/admin/uploads/${upload.id}/download?disposition=inline`}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          View Upload
+                        </a>
+                      ) : null}
                     </div>
                   )) : <p className="text-sm text-walkerMuted">No upload available.</p>}
                 </div>

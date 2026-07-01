@@ -123,6 +123,7 @@ model UploadedDocument {
   sizeBytes      Int
   storageKey     String
   checksumSha256 String?
+  contentBytes   Bytes?
   createdAt      DateTime          @default(now())
 
   @@index([userId, kind])

@@ -7,6 +7,7 @@ import { UploadKind } from '@prisma/client';
 export type SavedUpload = {
   storageKey: string;
   checksumSha256: string;
+  contentBytes?: Buffer;
 };
 
 export type SavedGeneratedPdf = {
@@ -24,7 +25,6 @@ const allowedMimeTypes = new Set([
 
 export function fileUploadsEnabled() {
   if (process.env.ENABLE_FILE_UPLOADS !== 'true') return false;
-  if (process.env.NODE_ENV === 'production' && !process.env.GCS_BUCKET_NAME) return false;
   return true;
 }
 
@@ -83,7 +83,11 @@ export async function saveUpload(params: {
   }
 
   if (process.env.NODE_ENV === 'production') {
-    throw new Error('GCS_BUCKET_NAME is required when file uploads are enabled in production.');
+    return {
+      storageKey: `db://${storageKey}`,
+      checksumSha256,
+      contentBytes: buffer
+    };
   }
 
   const localRoot = process.env.LOCAL_UPLOAD_DIR || './data/uploads';
@@ -170,6 +174,40 @@ export async function readStoredPdf(params: {
   }
 
   throw new Error('Document storage is not configured.');
+}
+
+export async function readStoredUpload(params: {
+  storageKey: string | null;
+  contentBytes?: Buffer | Uint8Array | null;
+}): Promise<Buffer> {
+  if (params.contentBytes) {
+    return Buffer.from(params.contentBytes);
+  }
+
+  if (!params.storageKey) {
+    throw new Error('Uploaded file is not available yet.');
+  }
+
+  const bucketName = process.env.GCS_BUCKET_NAME;
+  if (bucketName && !params.storageKey.startsWith('db://')) {
+    const storage = new Storage(googleStorageOptions());
+    const [buffer] = await storage.bucket(bucketName).file(params.storageKey).download();
+    return Buffer.from(buffer);
+  }
+
+  if (process.env.NODE_ENV !== 'production' && !params.storageKey.startsWith('db://')) {
+    const localRoot = process.env.LOCAL_UPLOAD_DIR || './data/uploads';
+    const root = path.resolve(process.cwd(), localRoot);
+    const filePath = path.resolve(root, params.storageKey);
+
+    if (!filePath.startsWith(root)) {
+      throw new Error('Invalid uploaded file path.');
+    }
+
+    return readFile(filePath);
+  }
+
+  throw new Error('Uploaded file storage is not configured.');
 }
 
 export function googleStorageOptions(): StorageOptions {

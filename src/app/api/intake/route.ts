@@ -83,7 +83,8 @@ export async function POST(request: Request) {
             mimeType: file.type,
             sizeBytes: file.size,
             storageKey: saved.storageKey,
-            checksumSha256: saved.checksumSha256
+            checksumSha256: saved.checksumSha256,
+            contentBytes: saved.contentBytes
           }))
         });
       }
