@@ -11,5 +11,6 @@ node_modules
 
 data
 .tmp-secrets
+tmp
 prisma-studio*.log
 start-prisma-studio.ps1
