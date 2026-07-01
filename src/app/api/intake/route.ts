@@ -41,7 +41,7 @@ export async function POST(request: Request) {
       : [];
     const ownerKey = user?.id || `guest-${Date.now()}-${randomUUID()}`;
     const conditionIntention = emptyToNull(parsed.conditionIntention) || emptyToNull(parsed.currentSymptoms);
-    const intakeEmail = emptyToNull(parsed.email) || `guest-${randomUUID()}@intake.weedwalker.local`;
+    const intakeEmail = parsed.email.trim().toLowerCase();
 
     const savedFiles = await Promise.all(
       uploadedFiles.map(async (upload) => ({

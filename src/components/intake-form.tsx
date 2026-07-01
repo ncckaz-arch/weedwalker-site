@@ -133,6 +133,11 @@ export function IntakeForm() {
             <span className="access-icon">☏</span>
             <input name="phone" required placeholder="Phone Number / เบอร์โทร" />
           </label>
+
+          <label className="access-field md:col-span-2">
+            <span className="access-icon">@</span>
+            <input name="email" required type="email" placeholder="Email / อีเมลที่ใช้เข้าสู่ Member Portal" />
+          </label>
         </div>
 
         <label className="access-field access-field-area access-field-plain">

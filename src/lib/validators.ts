@@ -9,7 +9,7 @@ export const memberProfileSchema = z.object({
 
 export const intakeSchema = z.object({
   fullName: z.string().min(2).max(160),
-  email: z.string().email().max(180).optional().or(z.literal('')),
+  email: z.string().email().max(180),
   phone: z.string().min(6).max(40),
   lineId: z.string().max(80).optional().or(z.literal('')),
   dateOfBirth: z.string().optional().or(z.literal('')),
