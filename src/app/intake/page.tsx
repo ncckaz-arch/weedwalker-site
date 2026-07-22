@@ -9,7 +9,7 @@ export default function IntakePage() {
   return (
     <main className="walker-shell py-4 md:py-6">
       <section className="mb-4 overflow-hidden rounded-[1.75rem] border border-walkerYellow/15 bg-[#050505] shadow-[0_0_70px_rgba(0,0,0,0.55)]">
-        <div className="grid lg:min-h-[380px] lg:grid-cols-[minmax(0,1fr)_360px]">
+        <div className="grid lg:min-h-[420px] lg:grid-cols-[minmax(0,0.95fr)_minmax(380px,1.05fr)]">
           <div className="relative z-10 flex flex-col gap-6 p-5 md:p-8 lg:p-9">
             <a href="/" className="flex items-center gap-4" aria-label="Back to WEED WALKER home">
               <span className="grid h-12 w-12 place-items-center overflow-hidden rounded-2xl border border-walkerYellow/30 bg-black shadow-[0_0_32px_rgba(255,210,26,0.18)]">
@@ -33,7 +33,7 @@ export default function IntakePage() {
                 MEMBER REGISTRATION
               </p>
 
-              <h1 className="text-4xl font-black leading-[0.95] tracking-[-0.055em] text-[#f8f3dc] md:text-5xl lg:text-6xl">
+              <h1 className="walker-page-title text-4xl font-black leading-[0.95] tracking-[-0.055em] text-[#f8f3dc] md:text-5xl lg:text-6xl">
                 สมัครสมาชิก
                 <span className="block text-walkerYellow">Medical Intake</span>
               </h1>
@@ -70,7 +70,7 @@ export default function IntakePage() {
         </div>
       </section>
 
-      <div className="mx-auto max-w-5xl">
+      <div className="mx-auto w-full">
         <IntakeForm />
       </div>
     </main>

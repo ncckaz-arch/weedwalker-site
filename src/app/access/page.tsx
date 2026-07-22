@@ -159,11 +159,11 @@ export default function AccessPage() {
       <div className="access-scanline" />
 
       <section className="walker-shell relative z-10 py-8 md:py-12">
-        <header className="mx-auto mb-7 max-w-5xl text-center">
+        <header className="mx-auto mb-7 max-w-[1120px] text-center">
           <p className="mx-auto mb-4 inline-flex rounded-full border border-[#a7ff3f]/40 bg-black/60 px-4 py-2 text-[11px] font-black uppercase tracking-[0.28em] text-[#b7ff57] shadow-[0_0_30px_rgba(167,255,63,0.18)]">
             WEED WALKER CRM / MEMBER SYSTEM
           </p>
-          <h1 className="text-5xl font-black uppercase leading-[0.86] tracking-[-0.07em] text-white drop-shadow-[0_0_28px_rgba(167,255,63,0.2)] md:text-7xl">
+          <h1 className="walker-page-title text-5xl font-black uppercase leading-[0.86] tracking-[-0.07em] text-white drop-shadow-[0_0_28px_rgba(167,255,63,0.2)] md:text-7xl">
             WEED WALKER <span className="text-[#a7ff3f]">ACCESS</span>
           </h1>
           <p className="mt-4 text-base font-black text-[#d8ff9f] md:text-xl">

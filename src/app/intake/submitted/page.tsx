@@ -36,7 +36,7 @@ export default async function SubmittedPage({ searchParams }: SubmittedPageProps
       <main className="walker-shell py-10">
         <section className="walker-card p-8">
           <p className="text-sm font-black uppercase tracking-[0.22em] text-walkerYellow">Application Submitted</p>
-          <h1 className="mt-4 text-4xl font-black tracking-[-0.05em] md:text-6xl">ไม่พบข้อมูลการยืนยัน</h1>
+          <h1 className="walker-page-title mt-4 text-4xl font-black tracking-[-0.05em] md:text-6xl">ไม่พบข้อมูลการยืนยัน</h1>
           <p className="mt-4 max-w-2xl text-lg leading-8 text-walkerMuted">
             ลิงก์นี้ไม่ถูกต้องหรือหมดสิทธิ์การเข้าถึง กรุณาเข้าสู่ Member Portal ด้วย Google เพื่อดูสถานะและเอกสารของคุณ
           </p>
@@ -55,13 +55,13 @@ export default async function SubmittedPage({ searchParams }: SubmittedPageProps
 
   return (
     <main className="walker-shell py-8 md:py-12">
-      <section className="mx-auto max-w-4xl overflow-hidden rounded-[2rem] border border-walkerYellow/20 bg-black/70 shadow-[0_0_90px_rgba(0,0,0,0.65)]">
+      <section className="mx-auto max-w-[1120px] overflow-hidden rounded-[2rem] border border-walkerYellow/20 bg-black/70 shadow-[0_0_90px_rgba(0,0,0,0.65)]">
         <div className="bg-[radial-gradient(circle_at_50%_0%,rgba(255,210,26,0.18),transparent_24rem)] p-6 text-center md:p-10">
           <div className="mx-auto grid h-24 w-24 place-items-center rounded-[2rem] border border-emerald-300/35 bg-emerald-400/10 text-5xl text-emerald-300 shadow-[0_0_42px_rgba(16,185,129,0.25)]">
             ✓
           </div>
           <p className="mt-8 text-sm font-black uppercase tracking-[0.24em] text-walkerYellow">Application Submitted</p>
-          <h1 className="mt-3 text-4xl font-black uppercase tracking-[-0.06em] text-[#f8f3dc] md:text-6xl">
+          <h1 className="walker-page-title mt-3 text-4xl font-black uppercase tracking-[-0.06em] text-[#f8f3dc] md:text-6xl">
             Application Submitted Successfully
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-[#d9d3bd] md:text-lg">

@@ -84,29 +84,34 @@ const footerLinks = [
 export default function HomePage() {
   return (
     <main className="min-h-screen overflow-hidden bg-[#020202] text-[#f8f3dc]">
-      <section className="relative border-b border-walkerYellow/15">
+      <section className="home-hero-section relative border-b border-walkerYellow/15">
+        <img
+          src="/weedwalker-hero-bg.jpg"
+          alt="WEED WALKER portal atmosphere"
+          className="home-hero-bg-image"
+        />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_14%,rgba(255,210,26,0.18),transparent_24rem),radial-gradient(circle_at_18%_6%,rgba(255,210,26,0.08),transparent_22rem)]" />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.98)_0%,rgba(0,0,0,0.78)_42%,rgba(0,0,0,0.26)_72%,rgba(0,0,0,0.72)_100%)]" />
 
-        <div className="walker-shell relative z-10">
-          <header className="flex items-center justify-between gap-5 py-5">
+        <div className="home-shell relative z-10">
+          <header className="home-header flex items-center justify-between gap-5 py-5">
             <a href="/" className="flex items-center gap-4" aria-label="WEED WALKER Home">
               <img
                 src="/weed-walker-logo-mark.png"
                 alt="WEED WALKER"
-                className="h-12 w-12 object-contain drop-shadow-[0_0_18px_rgba(255,210,26,0.35)] md:h-14 md:w-14"
+                className="home-brand-logo h-12 w-12 object-contain drop-shadow-[0_0_18px_rgba(255,210,26,0.35)] md:h-14 md:w-14"
               />
               <span>
-                <strong className="block text-xl font-black uppercase tracking-[0.22em] md:text-2xl">
+                <strong className="home-brand-title block text-xl font-black uppercase tracking-[0.22em] md:text-2xl">
                   WEED WALKER
                 </strong>
-                <small className="block text-[10px] font-black uppercase tracking-[0.25em] text-walkerYellow">
+                <small className="home-brand-subtitle block text-[10px] font-black uppercase tracking-[0.25em] text-walkerYellow">
                   Master of Cannabis
                 </small>
               </span>
             </a>
 
-            <nav className="hidden items-center gap-8 text-xs font-black uppercase tracking-[0.14em] text-[#d8d1b8] lg:flex">
+            <nav className="home-nav hidden items-center gap-8 text-xs font-black uppercase tracking-[0.14em] text-[#d8d1b8] lg:flex">
               <a className="text-walkerYellow" href="/">
                 Home
               </a>
@@ -119,21 +124,35 @@ export default function HomePage() {
 
             <a
               href="/member"
-              className="hidden min-h-12 items-center gap-3 rounded-xl border border-walkerYellow/70 bg-walkerYellow/10 px-5 text-xs font-black uppercase tracking-[0.16em] text-walkerYellow shadow-[0_0_30px_rgba(255,210,26,0.16)] transition hover:bg-walkerYellow hover:text-black md:inline-flex"
+              className="home-header-cta hidden min-h-12 items-center gap-3 rounded-xl border border-walkerYellow/70 bg-walkerYellow/10 px-5 text-xs font-black uppercase tracking-[0.16em] text-walkerYellow shadow-[0_0_30px_rgba(255,210,26,0.16)] transition hover:bg-walkerYellow hover:text-black md:inline-flex"
             >
               <span>♙</span>
               Member Login
             </a>
+
+            <details className="home-mobile-menu lg:hidden">
+              <summary aria-label="Open navigation">☰</summary>
+              <nav>
+                <a className="text-walkerYellow" href="/">
+                  Home
+                </a>
+                <a href="/intake">Intake Portal</a>
+                <a href="/member">Member Portal</a>
+                <a href="/access">Access</a>
+                <a href="/menu">Menu</a>
+                <a href="https://lin.ee/yNXeTBs">Contact</a>
+              </nav>
+            </details>
           </header>
 
-          <div className="grid min-h-[680px] items-center gap-10 py-14 lg:grid-cols-[0.92fr_1.08fr] lg:py-20">
+          <div className="home-hero-grid grid items-center">
             <div>
               <p className="mb-7 flex items-center gap-4 text-xs font-black uppercase tracking-[0.32em] text-walkerYellow">
                 Cannabis. Wellness. Lifestyle.
                 <span className="hidden h-px w-16 bg-walkerYellow/65 sm:block" />
               </p>
 
-              <h1 className="max-w-3xl font-serif text-[clamp(3.4rem,8vw,6.4rem)] leading-[0.93] tracking-[-0.055em]">
+              <h1 className="home-hero-heading max-w-3xl font-serif text-[clamp(3.4rem,8vw,6.4rem)] leading-[0.93] tracking-[-0.055em]">
                 From Soil to Power.
                 <span className="block">
                   From Science to <span className="text-walkerYellow">Soul.</span>
@@ -142,13 +161,13 @@ export default function HomePage() {
 
               <div className="my-8 h-px max-w-xl bg-gradient-to-r from-walkerYellow via-walkerYellow/45 to-transparent" />
 
-              <p className="max-w-xl text-base leading-8 text-[#d9d3bd] md:text-lg">
+              <p className="home-hero-copy max-w-xl text-base leading-8 text-[#d9d3bd] md:text-lg">
                 WEED WALKER is a cannabis experience built on science, sustainability,
                 and purpose. We curate knowledge, access, and member journeys for people
                 who want to choose cannabis with clarity.
               </p>
 
-              <div className="mt-9 flex flex-col gap-4 sm:flex-row">
+              <div className="home-hero-actions mt-9 flex flex-col gap-4 sm:flex-row">
                 <a
                   href="/intake"
                   className="inline-flex min-h-14 items-center justify-center gap-4 rounded-xl bg-walkerYellow px-7 text-sm font-black uppercase tracking-[0.08em] text-black shadow-[0_0_42px_rgba(255,210,26,0.28)] transition hover:-translate-y-0.5"
@@ -163,7 +182,7 @@ export default function HomePage() {
                 </a>
               </div>
 
-              <div className="mt-10 grid max-w-2xl gap-4 sm:grid-cols-3">
+              <div className="home-trust-grid mt-10 grid max-w-2xl gap-4 sm:grid-cols-3">
                 {[
                   ['✥', 'Premium Quality', 'Curated. Tested. Trusted.'],
                   ['▣', 'Privacy First', 'Your data. Your control.'],
@@ -184,17 +203,17 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="relative min-h-[440px] overflow-hidden rounded-[2rem] border border-walkerYellow/20 bg-black shadow-[0_0_80px_rgba(0,0,0,0.62)] lg:min-h-[590px]">
+            <div className="home-hero-visual relative overflow-hidden rounded-[2rem] border border-walkerYellow/20 bg-black shadow-[0_0_80px_rgba(0,0,0,0.62)]">
               <img
                 src="/weedwalker-hero-bg.jpg"
                 alt="WEED WALKER portal atmosphere"
-                className="absolute inset-0 h-full w-full object-cover"
+                className="home-hero-image absolute inset-0 h-full w-full object-cover"
               />
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_52%_42%,rgba(255,210,26,0.25),transparent_13rem),linear-gradient(180deg,rgba(0,0,0,0.18),rgba(0,0,0,0.72))]" />
               <div className="absolute left-8 top-8 grid h-20 w-20 place-items-center rounded-full border border-walkerYellow/50 bg-black/50 text-4xl font-black text-walkerYellow shadow-[0_0_42px_rgba(255,210,26,0.28)]">
                 W
               </div>
-              <div className="absolute bottom-8 left-6 right-6 rounded-3xl border border-white/15 bg-black/62 p-5 backdrop-blur-md md:left-auto md:w-[370px]">
+              <div className="home-hero-security-card absolute bottom-8 left-6 right-6 rounded-3xl border border-white/15 bg-black/62 p-5 backdrop-blur-md md:left-auto md:w-[370px]">
                 <div className="flex gap-4">
                   <span className="grid h-14 w-14 shrink-0 place-items-center rounded-full border border-walkerYellow/40 bg-walkerYellow/10 text-2xl text-walkerYellow">
                     ◇
@@ -212,9 +231,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="walker-shell py-12">
+      <section className="home-shell py-12">
         <SectionTitle title="Quick Access" />
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="home-quick-grid grid">
           {quickAccess.map((card) => (
             <a
               key={card.title}
@@ -234,7 +253,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="walker-shell py-8">
+      <section className="home-shell py-8">
         <SectionTitle title="Cultivation Systems" />
         <div className="overflow-hidden rounded-[2rem] border border-walkerYellow/20 bg-black/70">
           <div className="grid lg:grid-cols-2">
@@ -269,7 +288,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="walker-shell py-12">
+      <section className="home-shell py-12">
         <SectionTitle title="Community & Campaigns" />
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {communityCards.map((card) => (
@@ -292,7 +311,7 @@ export default function HomePage() {
       </section>
 
       <footer className="border-t border-walkerYellow/15 bg-black/70">
-        <div className="walker-shell grid gap-10 py-10 md:grid-cols-[1.1fr_0.8fr_0.8fr_1.1fr]">
+        <div className="home-shell grid gap-10 py-10 md:grid-cols-[1.1fr_0.8fr_0.8fr_1.1fr]">
           <div>
             <img src="/weed-walker-logo-mark.png" alt="WEED WALKER" className="h-16 w-16 object-contain" />
             <h2 className="mt-3 text-2xl font-black uppercase tracking-[0.24em] text-walkerYellow">

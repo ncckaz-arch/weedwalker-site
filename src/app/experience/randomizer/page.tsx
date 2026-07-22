@@ -28,10 +28,10 @@ export default function RandomizerPage() {
           <p className="mb-4 inline-flex rounded-full border border-walkerYellow/30 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-walkerYellow">
             Optional Promo
           </p>
-          <h1 className="max-w-4xl text-5xl font-black uppercase leading-[0.9] tracking-[-0.06em] md:text-7xl">
+          <h1 className="walker-page-title max-w-4xl text-5xl font-black uppercase leading-[0.9] tracking-[-0.06em] md:text-7xl">
             Random promo is disabled.
           </h1>
-          <p className="mt-5 max-w-2xl text-lg leading-8 text-[#d9d3bd]">
+          <p className="walker-page-copy mt-5 max-w-2xl text-lg leading-8 text-[#d9d3bd]">
             This feature is not part of the core WEED WALKER website. First launch focuses on Intake Portal, Access Level, and Flight Menu.
           </p>
           <a className="walker-btn walker-btn-primary mt-8" href="/">
@@ -48,10 +48,10 @@ export default function RandomizerPage() {
         <p className="mb-4 inline-flex rounded-full border border-walkerYellow/30 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-walkerYellow">
           Entertainment Feature
         </p>
-        <h1 className="max-w-4xl text-5xl font-black uppercase leading-[0.9] tracking-[-0.06em] md:text-8xl">
+        <h1 className="walker-page-title max-w-4xl text-5xl font-black uppercase leading-[0.9] tracking-[-0.06em] md:text-8xl">
           Strain Randomizer
         </h1>
-        <p className="mt-5 max-w-2xl text-lg leading-8 text-[#d9d3bd]">
+        <p className="walker-page-copy mt-5 max-w-2xl text-lg leading-8 text-[#d9d3bd]">
           เล่นกับ mood และ cultivation style เพื่อเปิดบทสนทนากับ budtender และสร้าง engagement ให้สมาชิก
         </p>
         <button onClick={roll} disabled={loading} className="walker-btn walker-btn-primary mt-8">

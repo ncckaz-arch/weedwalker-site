@@ -74,10 +74,10 @@ export default async function AdminPage() {
             Customer Detail View
           </Link>
         </div>
-        <h1 className="max-w-4xl text-5xl font-black uppercase leading-[0.9] tracking-[-0.06em] md:text-7xl">
+        <h1 className="walker-page-title max-w-4xl text-5xl font-black uppercase leading-[0.9] tracking-[-0.06em] md:text-7xl">
           Intake Review.
         </h1>
-        <p className="mt-5 max-w-2xl text-lg leading-8 text-[#d9d3bd]">
+        <p className="walker-page-copy mt-5 max-w-2xl text-lg leading-8 text-[#d9d3bd]">
           ตรวจสอบใบสมัคร เอกสารที่อัปโหลด และ PDF workflow สำหรับส่งต่อคลินิกพาร์ทเนอร์
         </p>
       </section>
