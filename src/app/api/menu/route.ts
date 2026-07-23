@@ -35,15 +35,23 @@ const typeAliases: Record<string, ProductType> = {
   indica: 'indica',
   sativa: 'sativa',
   hybrid: 'hybrid',
+  'balance hybrid': 'hybrid',
+  'balanced hybrid': 'hybrid',
   'indica hybrid': 'indica-dominant',
   'indica dominant': 'indica-dominant',
+  'indica dominant hybrid': 'indica-dominant',
   'indica-dominant': 'indica-dominant',
+  'indica-dominant hybrid': 'indica-dominant',
   'sativa hybrid': 'sativa-dominant',
   'sativa dominant': 'sativa-dominant',
-  'sativa-dominant': 'sativa-dominant'
+  'sativa dominant hybrid': 'sativa-dominant',
+  'sativa-dominant': 'sativa-dominant',
+  'sativa-dominant hybrid': 'sativa-dominant'
 };
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+export const fetchCache = 'force-no-store';
 
 export async function GET() {
   try {
@@ -61,8 +69,8 @@ export async function GET() {
     }
 
     const response = await fetch(csvUrl, {
-      headers: { accept: 'text/csv,text/plain,*/*' },
-      next: { revalidate: 60 }
+      cache: 'no-store',
+      headers: { accept: 'text/csv,text/plain,*/*' }
     });
 
     if (!response.ok) {
@@ -109,21 +117,34 @@ async function loadMenuFromSheetsApi() {
 }
 
 function menuCsvUrl() {
-  if (process.env.MENU_SHEET_CSV_URL) return process.env.MENU_SHEET_CSV_URL;
+  if (process.env.MENU_SHEET_CSV_URL) return withCacheBust(process.env.MENU_SHEET_CSV_URL);
 
   const sheetId = menuSheetId();
   if (!sheetId) return '';
 
   const sheetName = process.env.MENU_SHEET_NAME || DEFAULT_MENU_SHEET_NAME;
-  return `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(
+  return withCacheBust(`https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(
     sheetName
-  )}`;
+  )}`);
 }
 
 function menuCacheHeaders() {
   return {
-    'Cache-Control': 's-maxage=60, stale-while-revalidate=300'
+    'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0, s-maxage=0',
+    Expires: '0',
+    Pragma: 'no-cache'
   };
+}
+
+function withCacheBust(url: string) {
+  try {
+    const parsedUrl = new URL(url);
+    parsedUrl.searchParams.set('_ww', Date.now().toString());
+    return parsedUrl.toString();
+  } catch {
+    const separator = url.includes('?') ? '&' : '?';
+    return `${url}${separator}_ww=${Date.now()}`;
+  }
 }
 
 function parseMenuCsv(csv: string): MenuItem[] {
