@@ -12,6 +12,7 @@ type MenuItem = {
   name: string;
   category: LineCategory;
   type: ProductType;
+  typeLabel?: string;
   thc: string;
   price: string;
   flavors: string[];
@@ -473,6 +474,7 @@ export default function MenuPage() {
 function ProductCard({ item, onOpen }: { item: MenuItem; onOpen: () => void }) {
   const category = categoryMeta(item.category);
   const typeStyle = productTypeStyles[item.type];
+  const typeLabel = item.typeLabel || productTypes[item.type];
 
   return (
     <button
@@ -501,7 +503,7 @@ function ProductCard({ item, onOpen }: { item: MenuItem; onOpen: () => void }) {
             className="inline-flex rounded-full border px-2.5 py-0.5 text-[10px] font-black uppercase tracking-[0.1em]"
             style={typeStyle}
           >
-            {productTypes[item.type]}
+            {typeLabel}
           </span>
           <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#8c8874]">
             {category.line}
@@ -542,6 +544,7 @@ function ProductCard({ item, onOpen }: { item: MenuItem; onOpen: () => void }) {
 function ProductSheet({ item, onClose }: { item: MenuItem; onClose: () => void }) {
   const category = categoryMeta(item.category);
   const typeStyle = productTypeStyles[item.type];
+  const typeLabel = item.typeLabel || productTypes[item.type];
 
   return (
     <div
@@ -568,7 +571,7 @@ function ProductSheet({ item, onClose }: { item: MenuItem; onClose: () => void }
           </p>
           <h2 className="mt-3 text-4xl font-black tracking-[-0.06em] text-white">{item.name}</h2>
           <p className="mt-2 text-sm font-black uppercase" style={{ color: typeStyle.color }}>
-            {productTypes[item.type]}
+            {typeLabel}
           </p>
 
           <div className="mt-5 grid grid-cols-2 gap-2.5">

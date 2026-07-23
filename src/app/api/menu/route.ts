@@ -8,6 +8,7 @@ type MenuItem = {
   name: string;
   category: CategoryKey;
   type: ProductType;
+  typeLabel: string;
   thc: string;
   price: string;
   flavors: string[];
@@ -188,7 +189,8 @@ function rowToMenuItem(headers: string[], row: string[], index: number) {
   }
 
   const category = categoryAliases[normalizeValue(value('category'))];
-  const type = typeAliases[normalizeValue(value('type'))];
+  const typeLabel = value('type');
+  const type = typeAliases[normalizeValue(typeLabel)];
   const name = value('name');
   const id = value('id') || slugify(name);
 
@@ -200,6 +202,7 @@ function rowToMenuItem(headers: string[], row: string[], index: number) {
     name,
     category,
     type,
+    typeLabel,
     thc: value('thc'),
     price: value('price'),
     flavors: splitList(value('flavors') || value('terps') || value('terpenes')),
